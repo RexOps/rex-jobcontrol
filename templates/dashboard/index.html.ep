@@ -18,7 +18,11 @@
         Jobs
       </div>
       <div class="col-xs-10">
-        one, two, three
+        % if ($pro->job_count > 0) {
+        <%= join(", ", map { $_ = $_->name } @{ $pro->jobs }); %>
+        % } else {
+        No jobs
+        % }
       </div>
     </div>
 

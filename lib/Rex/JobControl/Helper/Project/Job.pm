@@ -63,4 +63,20 @@ sub create {
   YAML::DumpFile("$job_path/job.conf.yml", $job_configuration);
 }
 
+sub update {
+  my ($self, %data) = @_;
+  $self->{job_configuration} = \%data;
+
+  my $job_path = File::Spec->catdir($self->project->project_path, "jobs", $self->{directory});
+
+  YAML::DumpFile("$job_path/job.conf.yml", \%data);
+}
+
+sub remove {
+  my ($self) = @_;
+  my $job_path = File::Spec->catdir($self->project->project_path, "jobs", $self->{directory});
+
+  File::Path::remove_tree($job_path);
+}
+
 1;

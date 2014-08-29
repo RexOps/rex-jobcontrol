@@ -39,18 +39,22 @@ sub startup {
   my $job_r     = $r->bridge('/project/:project_dir/job/:job_dir')->to('job#prepare_stash');
 
   $r->get('/')->to('dashboard#index');
+
   $r->get('/project/new')->to('project#project_new');
+  $r->post('/project/new')->to('project#project_new_create');
+
   $r->get('/project/:project_dir')->to('project#view');
 
   $project_r->get('/new')->to('job#job_new');
-  $rex_r->get('/new')->to('rexfile#rexfile_new');
+  $project_r->post('/new')->to('job#job_new_create');
 
-  $job_r->post('/new')->to('job#job_new_create');
+  $rex_r->get('/new')->to('rexfile#rexfile_new');
   $rex_r->post('/new')->to('rexfile#rexfile_new_create');
 
   $job_r->get('/')->to('job#view');
-
-  $r->post('/project/new')->to('project#project_new_create');
+  $job_r->get('/edit')->to('job#edit');
+  $job_r->post('/edit')->to('job#edit_save');
+  $job_r->get('/delete')->to('job#job_delete');
 }
 
 1;

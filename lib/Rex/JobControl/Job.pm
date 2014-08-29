@@ -18,6 +18,35 @@ sub prepare_stash {
   $self->stash(job => $job);
 }
 
+sub edit_save {
+  my $self = shift;
+
+  my $pr  = $self->project($self->param("project_dir"));
+  my $job = $pr->get_job($self->param("job_dir"));
+
+  $job->update(
+    name => $self->param("job_name"),
+    description => $self->param("job_description"),
+    environment => $self->param("environment"),
+    fail_strategy => $self->param("fail_strategy"),
+    execute_strategy => $self->param("execute_strategy"),
+    steps => [ split(/,/, $self->param("hdn_workflow_steps")) ],
+  );
+
+  $self->redirect_to("/project/" . $pr->directory . "/job/" . $job->directory);
+}
+
+sub job_delete {
+  my $self = shift;
+
+  my $pr  = $self->project($self->param("project_dir"));
+  my $job = $pr->get_job($self->param("job_dir"));
+
+  $job->remove;
+
+  $self->redirect_to("/project/" . $pr->directory);
+}
+
 sub view {
   my $self = shift;
   $self->render;
@@ -45,7 +74,7 @@ sub job_new_create {
     steps => [ split(/,/, $self->param("hdn_workflow_steps")) ],
   );
 
-  $self->redirect_to("/project/" . $self->param("project_name"));
+  $self->redirect_to("/project/" . $self->param("project_dir"));
 }
 
 sub view {
