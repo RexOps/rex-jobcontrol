@@ -30,7 +30,7 @@
         Tasks
       </div>
       <div class="col-xs-10">
-        <%= join(", ", map { $_ = $_->{name} } @{ $rexfile->tasks }) %>
+        <%= join(", ", @{ $rexfile->tasks }) %>
       </div>
     </div>
 

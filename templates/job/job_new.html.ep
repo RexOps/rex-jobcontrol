@@ -76,6 +76,35 @@
     </div>
   </div>
  
+  <div class="panel panel-default">
+    <div class="panel-heading">Steps</div>
+    <div class="panel-body">
+
+      <div class="col-xs-3">
+        <ul id="workflow_steps" class="connectedSortable">
+        </ul>
+      </div>
+
+      <div class="col-xs-3">
+        <ul id="available_steps" class="connectedSortable">
+% for my $rexfile (@{ $project->rexfiles }) {
+  % for my $task (@{ $rexfile->tasks }) {
+    <li class="sortable-source-item"><%= $rexfile->name %> / <%= $task %></li>
+  % }
+% }
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    $(function() {
+      $( "#workflow_steps, #available_steps" ).sortable({
+        connectWith: ".connectedSortable"
+      }).disableSelection();
+    });
+  </script>
 
   <button type="submit" class="btn btn-primary">Create Job</button>
 </form>

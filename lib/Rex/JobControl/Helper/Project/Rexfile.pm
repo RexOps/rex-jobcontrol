@@ -11,6 +11,8 @@ use warnings;
 use File::Spec;
 use File::Path;
 use File::Basename;
+use YAML;
+
 use Rex::JobControl::Helper::Chdir;
 
 sub new {
@@ -66,21 +68,18 @@ sub create {
   };
 
   my @tasks;
-  chwd "$rex_path/$rexfile", sub {
-    my @out = `/home/jan/Projekte/rex/rex/bin/rex -Tm 2>&1`;
-    chomp @out;
+  my $rex_info;
 
-    for my $l (@out) {
-      my ($task, $desc) = ($l =~ m/'([^']+)' = '(.*)'/);
-      push @tasks, { name => $task, desc => $desc };
-    }
+  chwd "$rex_path/$rexfile", sub {
+    my $out = `/home/jan/Projekte/rex/rex/bin/rex -Ty 2>&1`;
+    $rex_info = YAML::Load($out);
   };
 
   my $rex_configuration = {
     name => $self->{directory},
     url  => $url,
     rexfile => $rexfile,
-    tasks => \@tasks,
+    rex => $rex_info,
   };
 
   YAML::DumpFile("$rex_path/rex.conf.yml", $rex_configuration);
@@ -88,7 +87,7 @@ sub create {
 
 sub tasks {
   my ($self) = @_;
-  return $self->{rex_configuration}->{tasks};
+  return $self->{rex_configuration}->{rex}->{tasks};
 }
 
 1;

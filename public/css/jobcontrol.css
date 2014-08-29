@@ -1,3 +1,28 @@
 body {
   padding-top: 50px;
 }
+
+#available_steps, #workflow_steps {
+  border: 1px solid #eee;
+  width: 242px;
+  min-height: 20px;
+  list-style-type: none;
+  margin: 0;
+  padding: 5px 0 0 0;
+  float: left;
+  margin-right: 10px;
+}
+#available_steps li, #workflow_steps li {
+  margin: 0 5px 5px 5px;
+  padding: 5px;
+  font-size: 1.2em;
+  width: 220px;
+}
+
+.sortable-source-item {
+  border: 1px solid #efefef;
+}
+
+.sortable-target-item {
+  border: 1px solid #efefef;
+}
