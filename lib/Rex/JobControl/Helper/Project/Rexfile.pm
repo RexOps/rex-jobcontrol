@@ -37,8 +37,11 @@ sub load {
 
 sub project { (shift)->{project} }
 sub name { (shift)->{rex_configuration}->{name} }
+sub url { (shift)->{rex_configuration}->{url} }
+sub description { (shift)->{rex_configuration}->{description} }
 sub groups { (shift)->{rex_configuration}->{rex}->{groups} }
 sub directory { (shift)->{directory} }
+sub rexfile { (shift)->{rex_configuration}->{rexfile} }
 
 sub _config_file {
   my ($self) = @_;
@@ -46,7 +49,7 @@ sub _config_file {
 }
 
 sub create {
-  my ($self) = @_;
+  my ($self, %data) = @_;
 
   my $rex_path = File::Spec->catdir($self->project->project_path, "rex", $self->{directory});
 
@@ -76,9 +79,11 @@ sub create {
     $rex_info = YAML::Load($out);
   };
 
+  $data{name} = $data{directory};
+  delete $data{directory};
+
   my $rex_configuration = {
-    name => $self->{directory},
-    url  => $url,
+    %data,
     rexfile => $rexfile,
     rex => $rex_info,
   };
@@ -106,6 +111,52 @@ sub all_server {
   }
 
   return \@all_server;
+}
+
+sub reload {
+  my ($self) = @_;
+
+  my $rex_path = File::Spec->catdir($self->project->project_path, "rex", $self->{directory});
+
+
+  my $rexfile = $self->rexfile;
+  my $url = $self->url;
+
+  chwd "$rex_path", sub {
+    my @out = `/home/jan/Projekte/rex/rex/bin/rexify --init=$url 2>&1`;
+    chomp @out;
+
+    $self->project->app->log->debug("Output of rexify --init=$url");
+    for my $l (@out) {
+      $self->project->app->log->debug("rexfile: $l");
+    }
+  };
+
+  my @tasks;
+  my $rex_info;
+
+  chwd "$rex_path/$rexfile", sub {
+    my $out = `/home/jan/Projekte/rex/rex/bin/rex -Ty 2>&1`;
+    $rex_info = YAML::Load($out);
+  };
+
+  my $rex_configuration = {
+    name => $self->{directory},
+    url  => $url,
+    rexfile => $rexfile,
+    rex => $rex_info,
+  };
+
+  YAML::DumpFile("$rex_path/rex.conf.yml", $rex_configuration);
+
+
+}
+
+sub remove {
+  my ($self) = @_;
+  my $rexfile_path = File::Spec->catdir($self->project->project_path, "rex", $self->{directory});
+
+  File::Path::remove_tree($rexfile_path);
 }
 
 1;

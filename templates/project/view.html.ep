@@ -87,3 +87,7 @@
 % }
 
 <a href="/project/<%= $project->directory %>/rexfile/new" class="btn btn-info">New Rexfile</a>
+
+<hr>
+
+<a href="/project/<%= $project->directory %>/delete" class="btn btn-danger">Remove Project</a>

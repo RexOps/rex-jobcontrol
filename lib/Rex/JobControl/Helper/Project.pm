@@ -138,7 +138,12 @@ sub create_rexfile {
   my ($self, %data) = @_;
 
   my $rexfile = Rex::JobControl::Helper::Project::Rexfile->new(project => $self, %data);
-  $rexfile->create;
+  $rexfile->create(%data);
+}
+
+sub get_rexfile {
+  my ($self, $dir) = @_;
+  return Rex::JobControl::Helper::Project::Rexfile->new(directory => $dir, project => $self);
 }
 
 sub all_server {
@@ -151,6 +156,11 @@ sub all_server {
   }
 
   return \@all_server;
+}
+
+sub remove {
+  my ($self) = @_;
+  File::Path::remove_tree($self->project_path());
 }
 
 1;

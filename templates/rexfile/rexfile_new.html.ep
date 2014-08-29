@@ -15,6 +15,11 @@
       </div>
 
       <div class="form-group">
+        <label for="rexfile_description">Rexfile Description</label>
+        <textarea class="form-control" id="rexfile_description" name="rexfile_description"></textarea>
+      </div>
+
+      <div class="form-group">
         <label for="rexfile_url">Rexfile URL</label>
         <input type="text" class="form-control" id="rexfile_url" name="rexfile_url" placeholder="">
       </div>

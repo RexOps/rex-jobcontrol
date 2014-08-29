@@ -38,4 +38,14 @@ sub view {
   $self->render;
 }
 
+sub remove {
+  my $self = shift;
+
+  my $project = $self->project($self->param("project_dir"));
+
+  $project->remove;
+
+  $self->redirect_to("/");
+}
+
 1;

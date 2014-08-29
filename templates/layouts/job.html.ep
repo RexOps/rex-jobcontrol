@@ -75,14 +75,14 @@
                 <li class="divider"></li>
                 <li class="dropdown-header">All Rexfiles in <%= $project->name %></li>
   % for my $rexfile (@{ $project->rexfiles }) {
-                <li><a href="/projects/<%= $project->directory %>/rexfile/<%= $rexfile->name %>"><%= $rexfile->name %></a></li>
+                <li><a href="/project/<%= $project->directory %>/rexfile/<%= $rexfile->name %>"><%= $rexfile->name %></a></li>
   % }
 % }
               </ul>
             </li>
 
-            <li><a href="#">Nodes</a></li>
-            <li><a href="#">Audit</a></li>
+            <li><a href="/project/<%= $project->directory %>/nodes">Nodes</a></li>
+            <li><a href="/project/<%= $project->directory %>/audit">Audit</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
               <li><a href="#help">Help</a></li>
