@@ -16,6 +16,28 @@
 <h3>Rexfiles</h3>
 % if ( scalar (@{ $rexfiles }) == 0 ) {
 <p>Currently this project has no Rexfiles.</p>
+% } else {
+
+% for my $rexfile (@{ $project->rexfiles }) {
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><a href="/project/<%= $project->directory %>/rexfile/<%= $rexfile->directory %>"><%= $rexfile->name %></a></h3>
+  </div>
+  <div class="panel-body">
+
+    <div>
+      <div class="col-xs-2">
+        Tasks
+      </div>
+      <div class="col-xs-10">
+        <%= join(", ", map { $_ = $_->{name} } @{ $rexfile->tasks }) %>
+      </div>
+    </div>
+
+  </div>
+</div>
+% }
+
 % }
 
 <a href="/project/<%= $project->directory %>/rexfile/new" class="btn btn-info">New Rexfile</a>

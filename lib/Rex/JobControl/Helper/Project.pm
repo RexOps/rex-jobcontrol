@@ -49,10 +49,10 @@ sub load {
 
 sub _config_file {
   my ($self) = @_;
-  return $self->_project_path() . "/project.conf.yml";
+  return $self->project_path() . "/project.conf.yml";
 }
 
-sub _project_path {
+sub project_path {
   my ($self) = @_;
 
   my $path = File::Spec->rel2abs($self->app->config->{project_path});
@@ -91,9 +91,9 @@ sub jobs {
 
   my @jobs;
 
-  opendir(my $dh, $self->_project_path() . "/jobs") or die($!);
+  opendir(my $dh, $self->project_path() . "/jobs") or die($!);
   while(my $entry = readdir($dh)) {
-    next if(! -f $self->_project_path() . "/jobs/job.conf.yml");
+    next if(! -f $self->project_path() . "/jobs/job.conf.yml");
     push @jobs, Rex::JobControl::Helper::Project::Job->new(directory => $entry, project => $self);
   }
   closedir($dh);
@@ -119,9 +119,9 @@ sub rexfiles {
 
   my @rexfiles;
 
-  opendir(my $dh, $self->_project_path() . "/rex") or die($!);
+  opendir(my $dh, $self->project_path() . "/rex") or die($!);
   while(my $entry = readdir($dh)) {
-    next if(! -f $self->_project_path() . "/rex/Rexfile");
+    next if(! -f $self->project_path() . "/rex/$entry/rex.conf.yml");
     push @rexfiles, Rex::JobControl::Helper::Project::Rexfile->new(directory => $entry, project => $self);
   }
   closedir($dh);
