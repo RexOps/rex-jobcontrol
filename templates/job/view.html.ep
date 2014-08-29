@@ -1,0 +1,100 @@
+% layout 'job';
+% title "Project " . $project->name . " / Job " . $job->name;
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <h2><%= $job->name %></h2>
+      <p><%= $job->description %></p>
+    </div>
+    <div class="col-md-4" style="margin-bottom: 55px;">
+      <h4 style="margin-top: 30px; margin-left: 12px;">Statistics</h4>
+      <div>
+        <div class="col-xs-5">
+          Last execution
+        </div>
+        <div class="col-xs-7">
+          2014-05-15 15:41:14
+        </div>
+      </div>
+
+      <div>
+        <div class="col-xs-5">
+          Last status
+        </div>
+        <div class="col-xs-7">
+          success
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<div class="panel panel-default">
+  <div class="panel-heading">Options</div>
+  <div class="panel-body">
+    <div>
+      <div class="col-xs-2">
+        Environment
+      </div>
+      <div class="col-xs-10">
+        <div class="checkbox" style="display: inline;">
+          <%= $job->environment || "default" %>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-xs-2">
+        Fail strategy
+      </div>
+      <div class="col-xs-10">
+        <div class="checkbox" style="display: inline;">
+          <%= $job->fail_strategy %>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-xs-2">
+        Execute strategy
+      </div>
+      <div class="col-xs-10">
+        <div class="checkbox" style="display: inline;">
+          <%= $job->execute_strategy %>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+</div>
+
+
+
+<div class="panel panel-default">
+
+  <div class="panel-heading">Steps</div>
+  <div class="panel-body">
+    <ol>
+      % for my $s (@{ $job->steps }) {
+      <li><%= $s %></li>
+      % }
+    </ol>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div class="col-xs-12">
+      <button class="btn btn-sm btn-success" type="button">Execute</button>
+      <button class="btn btn-sm btn-warning" type="button">Edit</button>
+      <button class="btn btn-sm btn-danger" type="button">Delete</button>
+    </div>
+  </div>
+</div>
+
+

@@ -8,7 +8,17 @@
 package Rex::JobControl::Job;
 use Mojo::Base 'Mojolicious::Controller';
 
-sub index {
+sub prepare_stash {
+  my $self = shift;
+
+  my $project = $self->project($self->param("project_dir"));
+  $self->stash(project => $project);
+
+  my $job = $project->get_job($self->param("job_dir"));
+  $self->stash(job => $job);
+}
+
+sub view {
   my $self = shift;
   $self->render;
 }

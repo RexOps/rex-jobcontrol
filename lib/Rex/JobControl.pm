@@ -33,19 +33,22 @@ sub startup {
 
   # Normal route to controller
 
-  my $r     = $base_routes->bridge('/')->to('dashboard#prepare_stash');
-  my $job_r = $r->bridge('/project/:project_dir/job')->to('project#prepare_stash');
-  my $rex_r = $r->bridge('/project/:project_dir/rexfile')->to('project#prepare_stash');
+  my $r         = $base_routes->bridge('/')->to('dashboard#prepare_stash');
+  my $project_r = $r->bridge('/project/:project_dir/job')->to('project#prepare_stash');
+  my $rex_r     = $r->bridge('/project/:project_dir/rexfile')->to('project#prepare_stash');
+  my $job_r     = $r->bridge('/project/:project_dir/job/:job_dir')->to('job#prepare_stash');
 
   $r->get('/')->to('dashboard#index');
   $r->get('/project/new')->to('project#project_new');
   $r->get('/project/:project_dir')->to('project#view');
 
-  $job_r->get('/new')->to('job#job_new');
+  $project_r->get('/new')->to('job#job_new');
   $rex_r->get('/new')->to('rexfile#rexfile_new');
 
   $job_r->post('/new')->to('job#job_new_create');
   $rex_r->post('/new')->to('rexfile#rexfile_new_create');
+
+  $job_r->get('/')->to('job#view');
 
   $r->post('/project/new')->to('project#project_new_create');
 }

@@ -26,8 +26,13 @@ sub new {
 }
 
 sub name { (shift)->{job_configuration}->{name} }
+sub description { (shift)->{job_configuration}->{description} }
+sub environment { (shift)->{job_configuration}->{environment} }
 sub project { (shift)->{project} }
 sub directory { (shift)->{directory} }
+sub steps { (shift)->{job_configuration}->{steps} }
+sub fail_strategy { (shift)->{job_configuration}->{fail_strategy} }
+sub execute_strategy { (shift)->{job_configuration}->{execute_strategy} }
 
 sub load {
   my ($self) = @_;

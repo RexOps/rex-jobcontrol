@@ -101,6 +101,11 @@ sub jobs {
   return \@jobs;
 }
 
+sub get_job {
+  my ($self, $dir) = @_;
+  return Rex::JobControl::Helper::Project::Job->new(directory => $dir, project => $self);
+}
+
 sub create_job {
   my ($self, %data) = @_;
 
