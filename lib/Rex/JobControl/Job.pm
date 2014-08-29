@@ -59,7 +59,12 @@ sub view {
   $self->app->log->debug("got last execution: $last_time");
 
   my $dt = DateTime->from_epoch(epoch => $last_time);
-  $self->stash(last_execution => $dt->ymd("-") . " " . $dt->hms(":"));
+  if($last_time == 0) {
+    $self->stash(last_execution => '-');
+  }
+  else {
+    $self->stash(last_execution => $dt->ymd("-") . " " . $dt->hms(":"));
+  }
   $self->stash(last_status => $job->last_status);
 
   $self->render;

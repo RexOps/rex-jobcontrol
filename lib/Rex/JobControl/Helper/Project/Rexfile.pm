@@ -164,6 +164,7 @@ sub execute {
   my ($self, %option) = @_;
 
   my $task = $option{task};
+  my $job = $option{job};
   my @server = @{ $option{server} };
 
   my $rex_path = File::Spec->catdir($self->project->project_path, "rex", $self->{directory}, $self->rexfile);
@@ -203,6 +204,10 @@ sub execute {
         task => $task,
         status => "failed",
       };
+    }
+
+    if($child_exit_status != 0 && $job->fail_strategy eq "terminate") {
+      $ret[-1]->{terminate_message} = "Terminating execution due to terminate fail strategy.";
     }
 
   }

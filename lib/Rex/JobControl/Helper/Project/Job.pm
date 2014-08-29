@@ -93,18 +93,62 @@ sub execute {
 
   File::Path::make_path($execute_path);
 
-  for my $s (@{ $self->steps }) {
-    my ($rexfile_name, $task) = split(/\//, $s);
-    my $rexfile = $self->project->get_rexfile($rexfile_name);
-    my $ret = $rexfile->execute(task => $task, server => \@server);
-    push @status, $ret;
+  $self->project->app->log->debug("Executing-Strategy: " . $self->execute_strategy);
+  $self->project->app->log->debug("Fail-Strategy: " . $self->fail_strategy);
+
+  if($self->execute_strategy eq "step") {
+
+    # execute strategy = step
+    # execute a step on all hosts, than continue with next step
+
+    STEP: for my $s (@{ $self->steps }) {
+
+      SERVER: for my $srv (@server) {
+
+        my ($rexfile_name, $task) = split(/\//, $s);
+        my $rexfile = $self->project->get_rexfile($rexfile_name);
+        
+        my $ret = $rexfile->execute(task => $task, server => [$srv], job => $self);
+        push @status, $ret->[0];
+
+        if(exists $ret->[0]->{terminate_message}) {
+          $self->project->app->log->debug("Terminating due to fail strategy.");
+          last STEP;
+        }
+
+      }
+    }
+
+  }
+  else {
+
+    # execute strategt = node
+    # execute all steps on a server, than continue
+
+    SERVER: for my $srv (@server) {
+
+      STEP: for my $s (@{ $self->steps }) {
+        my ($rexfile_name, $task) = split(/\//, $s);
+        my $rexfile = $self->project->get_rexfile($rexfile_name);
+        
+        my $ret = $rexfile->execute(task => $task, server => [$srv], job => $self);
+        push @status, $ret->[0];
+
+        if(exists $ret->[0]->{terminate_message}) {
+          $self->project->app->log->debug("Terminating due to fail strategy.");
+          last SERVER;
+        }
+      }
+
+    }
+
   }
 
   YAML::DumpFile("$execute_path/run.status.yml", 
     {
       start_time => $pid,
       end_time => time,
-      status => @status,
+      status => \@status,
     }
   );
 }
@@ -116,6 +160,10 @@ sub last_status {
 
   my $job_path = File::Spec->catdir($self->project->project_path, "jobs", $self->{directory});
   my $execute_path = "$job_path/execute/$last_execution";
+
+  if(! -f "$execute_path/run.status.yml") {
+    return "not executed yet";
+  }
 
   my $ref = YAML::LoadFile("$execute_path/run.status.yml");
 

@@ -26,7 +26,11 @@
       </div>
       <div class="col-xs-9">
         % my $dt = DateTime->from_epoch(epoch => $job->last_execution);
+        % if ($job->last_execution == 0) {
+        &nbsp;
+        % } else {
         <%= $dt->ymd("-") %> <%= $dt->hms(":") %>
+        % } 
       </div>
 
     </div>
