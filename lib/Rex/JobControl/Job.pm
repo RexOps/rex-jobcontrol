@@ -21,11 +21,19 @@ sub job_new {
 sub job_new_create {
   my $self = shift;
 
-  $self->app->log->debug("Got project name: " . $self->param("project_name"));
-  $self->app->log->debug("Got job name: " . $self->param("project_name"));
+  $self->app->log->debug("Got project name: " . $self->param("project_dir"));
+  $self->app->log->debug("Got job name: " . $self->param("job_name"));
 
-  my $pr = $self->project($self->param("project_name"));
-  $pr->create_job(directory => $self->param("job_name"));
+  my $pr = $self->project($self->param("project_dir"));
+  $pr->create_job(
+    directory => $self->param("job_name"),
+    name => $self->param("job_name"),
+    description => $self->param("job_description"),
+    environment => $self->param("environment"),
+    fail_strategy => $self->param("fail_strategy"),
+    execute_strategy => $self->param("execute_strategy"),
+    steps => [ split(/,/, $self->param("hdn_workflow_steps")) ],
+  );
 
   $self->redirect_to("/project/" . $self->param("project_name"));
 }

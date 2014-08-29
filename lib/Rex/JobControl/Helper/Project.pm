@@ -93,7 +93,7 @@ sub jobs {
 
   opendir(my $dh, $self->project_path() . "/jobs") or die($!);
   while(my $entry = readdir($dh)) {
-    next if(! -f $self->project_path() . "/jobs/job.conf.yml");
+    next if(! -f $self->project_path() . "/jobs/$entry/job.conf.yml");
     push @jobs, Rex::JobControl::Helper::Project::Job->new(directory => $entry, project => $self);
   }
   closedir($dh);
@@ -105,7 +105,7 @@ sub create_job {
   my ($self, %data) = @_;
 
   my $job = Rex::JobControl::Helper::Project::Job->new(project => $self, %data);
-  $job->create;
+  $job->create(%data);
 }
 
 sub rexfile_count {

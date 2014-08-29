@@ -27,6 +27,24 @@
   <div class="panel panel-default">
     <div class="panel-heading">Options</div>
     <div class="panel-body">
+      <div>
+        <div class="col-xs-2">
+          Environment
+        </div>
+        <div class="col-xs-10">
+          <div class="checkbox" style="display: inline;">
+            <select name="environment" id="environment">
+              <option value="">default</option>
+% for my $rexfile (@{ $project->rexfiles }) {
+  % for my $env (@{ $rexfile->environments }) {
+              <option value=""><%= $env %></option>
+  % }
+% }
+            </select>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -42,7 +60,7 @@
         <div class="col-xs-10">
           <div class="checkbox" style="display: inline;">
             <label>
-              <input type="radio" name="fail_strategy" value="terminate"> Terminate execution
+              <input type="radio" name="fail_strategy" value="terminate" checked="checked"> Terminate execution
             </label>
           </div>
 
@@ -67,7 +85,7 @@
 
           <div class="checkbox" style="display: inline;">
             <label>
-              <input type="radio" name="execute_strategy" value="step"> Step
+              <input type="radio" name="execute_strategy" value="step" checked="checked"> Step
             </label>
           </div>
         </div>
@@ -89,7 +107,7 @@
         <ul id="available_steps" class="connectedSortable">
 % for my $rexfile (@{ $project->rexfiles }) {
   % for my $task (@{ $rexfile->tasks }) {
-    <li class="sortable-source-item"><%= $rexfile->name %> / <%= $task %></li>
+          <li class="sortable-source-item" rexfile="<%= $rexfile->directory %>" task="<%= $task %>"><%= $rexfile->name %> / <%= $task %></li>
   % }
 % }
         </ul>
@@ -101,10 +119,20 @@
   <script>
     $(function() {
       $( "#workflow_steps, #available_steps" ).sortable({
-        connectWith: ".connectedSortable"
+        connectWith: ".connectedSortable",
+        update: function(event, ui) {
+          var x = new Array();
+          $("#workflow_steps").find("li").each(function(idx, itm) {
+            x.push($(itm).attr("rexfile") + "/" + $(itm).attr("task"));
+          });
+
+          $("#hdn_workflow_steps").val(x.join(","));
+        }
       }).disableSelection();
     });
   </script>
+
+  <input type="hidden" id="hdn_workflow_steps" name="hdn_workflow_steps" />
 
   <button type="submit" class="btn btn-primary">Create Job</button>
 </form>

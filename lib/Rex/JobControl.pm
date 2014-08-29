@@ -44,6 +44,7 @@ sub startup {
   $job_r->get('/new')->to('job#job_new');
   $rex_r->get('/new')->to('rexfile#rexfile_new');
 
+  $job_r->post('/new')->to('job#job_new_create');
   $rex_r->post('/new')->to('rexfile#rexfile_new_create');
 
   $r->post('/project/new')->to('project#project_new_create');

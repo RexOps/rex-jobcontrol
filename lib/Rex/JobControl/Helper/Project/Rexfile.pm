@@ -90,4 +90,9 @@ sub tasks {
   return $self->{rex_configuration}->{rex}->{tasks};
 }
 
+sub environments {
+  my ($self) = @_;
+  return $self->{rex_configuration}->{rex}->{envs};
+}
+
 1;
