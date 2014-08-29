@@ -90,7 +90,7 @@
 <div class="panel panel-default">
   <div class="panel-body">
     <div class="col-xs-12">
-      <button class="btn btn-sm btn-success" type="button">Execute</button>
+      <a href="/project/<%= $project->directory %>/job/<%= $job->directory %>/execute" class="btn btn-sm btn-success">Execute</a>
       <a href="/project/<%= $project->directory %>/job/<%= $job->directory %>/edit" class="btn btn-sm btn-warning">Edit</a>
       <a href="/project/<%= $project->directory %>/job/<%= $job->directory %>/delete" class="btn btn-sm btn-danger">Remove</a>
     </div>

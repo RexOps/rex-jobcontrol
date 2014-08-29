@@ -141,4 +141,16 @@ sub create_rexfile {
   $rexfile->create;
 }
 
+sub all_server {
+  my ($self) = @_;
+
+  my @all_server;
+
+  for my $rex (@{ $self->rexfiles }) {
+    push @all_server, @{ $rex->all_server };
+  }
+
+  return \@all_server;
+}
+
 1;

@@ -11,11 +11,13 @@
     <link href="/css/jobcontrol.css" rel="stylesheet">
     <link href="/3rdparty/jquery-ui-1.11.1/jquery-ui.min.css" rel="stylesheet">
     <link href="/3rdparty/jquery-ui-1.11.1/jquery-ui.theme.min.css" rel="stylesheet">
+    <link href="//cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css" rel="stylesheet">
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
     <script src="/3rdparty/jquery-ui-1.11.1/jquery-ui.min.js"></script>
+    <script src="//cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->

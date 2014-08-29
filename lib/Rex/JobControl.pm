@@ -55,6 +55,8 @@ sub startup {
   $job_r->get('/edit')->to('job#edit');
   $job_r->post('/edit')->to('job#edit_save');
   $job_r->get('/delete')->to('job#job_delete');
+  $job_r->get('/execute')->to('job#job_execute');
+  $job_r->post('/execute')->to('job#job_execute_dispatch');
 }
 
 1;

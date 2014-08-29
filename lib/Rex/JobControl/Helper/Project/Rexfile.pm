@@ -37,6 +37,7 @@ sub load {
 
 sub project { (shift)->{project} }
 sub name { (shift)->{rex_configuration}->{name} }
+sub groups { (shift)->{rex_configuration}->{rex}->{groups} }
 sub directory { (shift)->{directory} }
 
 sub _config_file {
@@ -93,6 +94,18 @@ sub tasks {
 sub environments {
   my ($self) = @_;
   return $self->{rex_configuration}->{rex}->{envs};
+}
+
+sub all_server {
+  my ($self) = @_;
+
+  my @all_server;
+
+  for my $group (keys %{ $self->groups }) {
+    push @all_server, (map { $_ = { name => $_->{name}, group => $group } } @{ $self->groups->{$group} });
+  }
+
+  return \@all_server;
 }
 
 1;

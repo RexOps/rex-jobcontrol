@@ -77,6 +77,26 @@ sub job_new_create {
   $self->redirect_to("/project/" . $self->param("project_dir"));
 }
 
+sub job_execute {
+  my $self = shift;
+
+  my $pr = $self->project($self->param("project_dir"));
+  my $all_server = $pr->all_server;
+
+  $self->stash(all_server => $all_server);
+
+  $self->render('job/execute');
+}
+
+sub job_execute_dispatch {
+  my $self = shift;
+
+  my $pr  = $self->project($self->param("project_dir"));
+  my $job = $pr->get_job($self->param("job_dir"));
+
+  $self->redirect_to("/project/" . $pr->directory . "/job/" . $job->directory);
+}
+
 sub view {
   my $self = shift;
 
