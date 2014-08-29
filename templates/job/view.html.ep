@@ -14,7 +14,7 @@
           Last execution
         </div>
         <div class="col-xs-7">
-          2014-05-15 15:41:14
+          <%= $last_execution %>
         </div>
       </div>
 
@@ -23,7 +23,7 @@
           Last status
         </div>
         <div class="col-xs-7">
-          success
+          <%= $last_status %>
         </div>
       </div>
 

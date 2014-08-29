@@ -12,6 +12,7 @@ use File::Spec;
 use File::Path;
 use File::Basename;
 use YAML;
+use IPC::Open2;
 
 use Rex::JobControl::Helper::Chdir;
 
@@ -157,6 +158,56 @@ sub remove {
   my $rexfile_path = File::Spec->catdir($self->project->project_path, "rex", $self->{directory});
 
   File::Path::remove_tree($rexfile_path);
+}
+
+sub execute {
+  my ($self, %option) = @_;
+
+  my $task = $option{task};
+  my @server = @{ $option{server} };
+
+  my $rex_path = File::Spec->catdir($self->project->project_path, "rex", $self->{directory}, $self->rexfile);
+
+
+  my @ret;
+
+  for my $srv (@server) {
+
+    my $child_exit_status;
+    chwd $rex_path, sub {
+      my ($chld_out, $chld_in, $pid);
+      $pid = open2($chld_out, $chld_in, $self->project->app->config->{rex}, '-H', $srv, '-t', 1, '-F', '-m', $task);
+
+      while(my $line = <$chld_out>) {
+        chomp $line;
+        $self->project->app->log->debug("rex: $line");
+      }
+
+      waitpid( $pid, 0 );
+
+      $child_exit_status = $? >> 8;
+    };
+
+    if($child_exit_status == 0) {
+      push @ret, {
+        server => $srv,
+        rexfile => $self->name,
+        task => $task,
+        status => "success",
+      };
+    }
+    else {
+      push @ret, {
+        server => $srv,
+        rexfile => $self->name,
+        task => $task,
+        status => "failed",
+      };
+    }
+
+  }
+
+  return \@ret;
 }
 
 1;

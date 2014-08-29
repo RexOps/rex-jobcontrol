@@ -23,3 +23,5 @@ screencasts
 vars.db
 vars.db.lock
 projects
+minion.data
+minion.data.lock

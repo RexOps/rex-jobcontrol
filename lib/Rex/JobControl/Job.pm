@@ -7,6 +7,7 @@
 
 package Rex::JobControl::Job;
 use Mojo::Base 'Mojolicious::Controller';
+use DateTime;
 
 sub prepare_stash {
   my $self = shift;
@@ -49,6 +50,18 @@ sub job_delete {
 
 sub view {
   my $self = shift;
+
+  my $project = $self->project($self->param("project_dir"));
+  my $job = $project->get_job($self->param("job_dir"));
+
+  my $last_time = $job->last_execution;
+
+  $self->app->log->debug("got last execution: $last_time");
+
+  my $dt = DateTime->from_epoch(epoch => $last_time);
+  $self->stash(last_execution => $dt->ymd("-") . " " . $dt->hms(":"));
+  $self->stash(last_status => $job->last_status);
+
   $self->render;
 }
 
@@ -94,19 +107,9 @@ sub job_execute_dispatch {
   my $pr  = $self->project($self->param("project_dir"));
   my $job = $pr->get_job($self->param("job_dir"));
 
+  $self->minion->enqueue(execute_rexfile => [$pr->directory, $job->directory, $self->param("sel_server")]);
+
   $self->redirect_to("/project/" . $pr->directory . "/job/" . $job->directory);
-}
-
-sub view {
-  my $self = shift;
-
-  my $project = $self->project($self->param("project_dir"));
-  my $job     = $project->get_job($self->param("job_dir"));
-
-  $self->stash(project => $project);
-  $self->stash(job => $job);
-
-  $self->render;
 }
 
 1;

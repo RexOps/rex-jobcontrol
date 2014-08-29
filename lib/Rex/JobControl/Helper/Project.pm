@@ -91,7 +91,7 @@ sub jobs {
 
   my @jobs;
 
-  opendir(my $dh, $self->project_path() . "/jobs") or die($!);
+  opendir(my $dh, $self->project_path() . "/jobs") or die("Error: $! (" . $self->project_path() . ")");
   while(my $entry = readdir($dh)) {
     next if(! -f $self->project_path() . "/jobs/$entry/job.conf.yml");
     push @jobs, Rex::JobControl::Helper::Project::Job->new(directory => $entry, project => $self);

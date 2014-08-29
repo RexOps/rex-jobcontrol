@@ -1,3 +1,4 @@
+% use DateTime;
 % layout 'project';
 % title "Project " . $project->name . " / Jobs";
 <h2><%= $project->name %></h2>
@@ -21,20 +22,21 @@
 
     <div>
       <div class="col-xs-3">
-        Last successfull execution
+        Last execution
       </div>
       <div class="col-xs-9">
-        2014-05-16 16:13:51
+        % my $dt = DateTime->from_epoch(epoch => $job->last_execution);
+        <%= $dt->ymd("-") %> <%= $dt->hms(":") %>
       </div>
 
     </div>
 
     <div>
       <div class="col-xs-3">
-        Last failed execution
+        Last status
       </div>
       <div class="col-xs-9">
-        2014-05-15 16:13:51
+        <%= $job->last_status %>
       </div>
 
     </div>
@@ -43,7 +45,7 @@
 
       <div class="col-xs-12">
         <hr>
-        <button class="btn btn-sm btn-success" type="button">Execute</button>
+        <a href="/project/<%= $project->directory %>/job/<%= $job->directory %>/execute" class="btn btn-sm btn-success">Execute</a>
         <a href="/project/<%= $project->directory %>/job/<%= $job->directory %>/edit" class="btn btn-sm btn-warning">Edit</a>
         <a href="/project/<%= $project->directory %>/job/<%= $job->directory %>/delete" class="btn btn-sm btn-danger">Remove</a>
       </div>

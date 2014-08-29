@@ -12,6 +12,8 @@ use warnings;
 use File::Spec;
 use File::Path;
 use YAML;
+use Rex::JobControl::Helper::Chdir;
+use Data::Dumper;
 
 sub new {
   my $that = shift;
@@ -78,5 +80,77 @@ sub remove {
 
   File::Path::remove_tree($job_path);
 }
+
+sub execute {
+  my ($self, @server) = @_;
+  $self->project->app->log->debug("Executing job: " . $self->name);
+  my $job_path = File::Spec->catdir($self->project->project_path, "jobs", $self->{directory});
+
+  my $pid = time;
+  my $execute_path = "$job_path/execute/$pid";
+
+  my @status;
+
+  File::Path::make_path($execute_path);
+
+  for my $s (@{ $self->steps }) {
+    my ($rexfile_name, $task) = split(/\//, $s);
+    my $rexfile = $self->project->get_rexfile($rexfile_name);
+    my $ret = $rexfile->execute(task => $task, server => \@server);
+    push @status, $ret;
+  }
+
+  YAML::DumpFile("$execute_path/run.status.yml", 
+    {
+      start_time => $pid,
+      end_time => time,
+      status => @status,
+    }
+  );
+}
+
+sub last_status {
+  my ($self) = @_;
+
+  my $last_execution = $self->last_execution;
+
+  my $job_path = File::Spec->catdir($self->project->project_path, "jobs", $self->{directory});
+  my $execute_path = "$job_path/execute/$last_execution";
+
+  my $ref = YAML::LoadFile("$execute_path/run.status.yml");
+
+  my ($failed) = grep { $_->{status} eq "failed" } @{ $ref->{status} };
+
+  if($failed) {
+    return "failed";
+  }
+  
+  return "success";
+}
+
+sub last_execution {
+  my ($self) = @_;
+  my $job_path = File::Spec->catdir($self->project->project_path, "jobs", $self->{directory});
+  my $execute_path = "$job_path/execute";
+
+  if(-d $execute_path) {
+    my @entries;
+    opendir(my $dh, $execute_path) or die($!);
+    while(my $entry = readdir($dh)) {
+      next if (! -f "$execute_path/$entry/run.status.yml");
+      push @entries, $entry;
+    }
+    closedir($dh);
+
+    my ($last) = sort { $b <=> $a } @entries;
+
+    return $last;
+  }
+  else {
+    return 0;
+  }
+
+}
+
 
 1;
