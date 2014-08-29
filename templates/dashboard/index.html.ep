@@ -1,0 +1,41 @@
+% layout 'dashboard';
+% title 'Welcome to Rex::JobControl';
+<h2><%= $project_count %> Projects</h2>
+
+% if($project_count == 0) {
+<p>Currently there is no project configured.</p>
+% } else {
+
+% for my $pro (@{ $projects }) {
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><a href="/project/<%= $pro->directory %>"><%= $pro->name %></a></h3>
+  </div>
+  <div class="panel-body">
+
+    <div>
+      <div class="col-xs-2">
+        Jobs
+      </div>
+      <div class="col-xs-10">
+        one, two, three
+      </div>
+    </div>
+
+    <div>
+      <div class="col-xs-2">
+        Last executed job
+      </div>
+      <div class="col-xs-10">
+        prepare
+      </div>
+    </div>
+
+  </div>
+</div>
+% }
+
+% }
+
+<a href="/project/new" class="btn btn-info">New Project</a>
+

@@ -1,0 +1,21 @@
+% layout 'project';
+% title "Project " . $project->name . " / Jobs";
+<h2><%= $project->name %></h2>
+
+% my $jobs     = $project->jobs;
+% my $rexfiles = $project->rexfiles;
+
+<h3>Jobs</h3>
+% if ( scalar (@{ $jobs }) == 0 ) {
+<p>Currently this project has no jobs.</p>
+% }
+
+<a href="/project/<%= $project->directory %>/job/new" class="btn btn-info">New Job</a>
+
+
+<h3>Rexfiles</h3>
+% if ( scalar (@{ $rexfiles }) == 0 ) {
+<p>Currently this project has no Rexfiles.</p>
+% }
+
+<a href="/project/<%= $project->directory %>/rexfile/new" class="btn btn-info">New Rexfile</a>

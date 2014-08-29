@@ -1,0 +1,27 @@
+% layout 'project';
+% title 'New Rexfile';
+<h2>Create a new Rexfile</h2>
+
+
+<form action="/project/<%= $project->directory %>/rexfile/new" method="post">
+  <div class="panel panel-default">
+
+    <div class="panel-heading">Basic Settings</div>
+    <div class="panel-body">
+
+      <div class="form-group">
+        <label for="rexfile_name">Rexfile Name</label>
+        <input type="text" class="form-control" id="rexfile_name" name="rexfile_name" placeholder="">
+      </div>
+
+      <div class="form-group">
+        <label for="rexfile_url">Rexfile URL</label>
+        <input type="text" class="form-control" id="rexfile_url" name="rexfile_url" placeholder="">
+      </div>
+
+    </div>
+
+  </div>
+
+  <button type="submit" class="btn btn-primary">Create Rexfile</button>
+</form>
