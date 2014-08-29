@@ -200,5 +200,35 @@ sub last_execution {
 
 }
 
+sub get_logs {
+  my ($self) = @_;
+
+  my $job_path = File::Spec->catdir($self->project->project_path, "jobs", $self->{directory});
+
+  my $execute_path = "$job_path/execute";
+
+  if(-d $execute_path) {
+
+    my @entries;
+    opendir(my $dh, $execute_path) or die($!);
+    while(my $entry = readdir($dh)) {
+      next if (! -f "$execute_path/$entry/run.status.yml");
+      push @entries, YAML::LoadFile("$execute_path/$entry/run.status.yml");
+    }
+    closedir($dh);
+
+    @entries = sort { $b->{start_time} <=> $a->{start_time} } @entries;
+
+    return \@entries;
+
+  }
+
+  else {
+  
+    return [];
+
+  }
+}
+
 
 1;
