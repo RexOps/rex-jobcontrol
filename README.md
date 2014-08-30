@@ -6,7 +6,7 @@ Currently the Webinterface is in early development stage. So if you see bugs, ha
 
 ## Some Screenshots
 
-Login:
+* Login:
 
 ![Login](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/images/login.png)
 
