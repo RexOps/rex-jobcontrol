@@ -4,6 +4,21 @@ Rex::JobControl is a simple Webinterface to Rex.
 
 Currently the Webinterface is in early development stage. So if you see bugs, have ideas for improvement or want to help developing please contact us via the issue tracker or via irc (irc.freenode.net #rex).
 
+## Some Screenshots
+
+Login:
+![Login](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/images/login.png)
+
+Project:
+![Project view](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/images/projects.png)
+
+Job:
+![Job view](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/images/job.png)
+
+Execute:
+![Execute a job](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/images/execute.png)
+
+
 ## Installation
 
 Currently there are no packages, but the installation is quite simple.
