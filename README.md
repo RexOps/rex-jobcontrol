@@ -7,15 +7,22 @@ Currently the Webinterface is in early development stage. So if you see bugs, ha
 ## Some Screenshots
 
 Login:
+
 ![Login](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/images/login.png)
 
-Project:
+
+* Project:
+
 ![Project view](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/images/projects.png)
 
-Job:
+
+* Job:
+
 ![Job view](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/images/job.png)
 
-Execute:
+
+* Execute:
+
 ![Execute a job](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/images/execute.png)
 
 
