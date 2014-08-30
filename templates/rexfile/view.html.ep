@@ -69,12 +69,21 @@
 
 <hr>
 
-<a href="/project/<%= $project->directory %>/rexfile/<%= $rexfile->directory %>/reload" class="btn btn-primary">Reload</a>
-<a href="/project/<%= $project->directory %>/rexfile/<%= $rexfile->directory %>/delete" class="btn btn-danger">Remove</a>
+<a href="/project/<%= $project->directory %>/rexfile/<%= $rexfile->directory %>/reload" class="btn btn-sm btn-primary">Reload</a>
+<button
+  href="/project/<%= $project->directory %>/rexfile/<%= $rexfile->directory %>/delete"
+  rexfile_name="<%= $rexfile->name %>"
+  class="delete-rexfile-button btn btn-sm btn-danger">Remove</button>
+
 
 <script>
 $(document).ready(function() {
-    $('#server').dataTable();
+  $('#server').dataTable();
+
+  $(".delete-rexfile-button").click(function() {
+    delete_rexfile("Remove " + $(this).attr("rexfile_name") + "?", $(this).attr("href"));
+  });
+
 } );
 </script>
 

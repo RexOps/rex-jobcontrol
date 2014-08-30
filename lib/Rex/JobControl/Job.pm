@@ -45,6 +45,15 @@ sub job_delete {
 
   $job->remove;
 
+  $self->flash(
+    {
+      title => "Job removed",
+      message =>
+        "Job <b>" . $job->name . "</b> removed.",
+    }
+  );
+
+
   $self->redirect_to("/project/" . $pr->directory);
 }
 
@@ -91,6 +100,16 @@ sub job_new_create {
     execute_strategy => $self->param("execute_strategy"),
     steps => [ split(/,/, $self->param("hdn_workflow_steps")) ],
   );
+
+  $self->flash(
+    {
+      title => "Job created",
+      message =>
+        "A new job <b>" . $self->param("job_name") . "</b> was created.",
+    }
+  );
+
+
 
   $self->redirect_to("/project/" . $self->param("project_dir"));
 }

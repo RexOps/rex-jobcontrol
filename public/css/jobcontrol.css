@@ -26,3 +26,17 @@ body {
 .sortable-target-item {
   border: 1px solid #efefef;
 }
+
+.ui-widget-header {
+  background: none;
+  background-color: #efefef !important;
+  border: 0px !important;
+  color: #000000 !important;
+  border-radius: 0px !important;
+}
+
+.ui-dialog {
+  border-radius: 0px !important;
+  padding: 0px !important;
+}
+
