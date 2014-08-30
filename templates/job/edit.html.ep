@@ -1,5 +1,5 @@
-% layout 'project';
-% title 'New Job';
+% layout 'job';
+% title 'Edit Job';
 <h2>Edit <%= $job->name %></h2>
 
 <form action="/project/<%= $project->directory %>/job/<%= $job->directory %>/edit" method="post">

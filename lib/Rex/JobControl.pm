@@ -2,6 +2,7 @@ package Rex::JobControl;
 
 use Mojo::Base 'Mojolicious';
 use Data::Dumper;
+use Rex::JobControl::Mojolicious::Command::jobcontrol;
 
 # This method will run once at server start
 sub startup {
@@ -30,6 +31,22 @@ sub startup {
 
   $self->plugin(Minion => {File  => $self->app->config->{minion_db_file}});
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::MinionJobs");
+  $self->plugin("Rex::JobControl::Mojolicious::Plugin::User");
+  $self->plugin("Authentication" => {
+    autoload_user => 1,
+    session_key   => $self->config->{session}->{key},
+    load_user     => sub {
+      my ($app, $uid) = @_;
+
+      my $user = $app->get_user($uid);
+      return $user; # user objekt
+    },
+    validate_user => sub {
+      my ($app, $username, $password) = @_;
+      return $app->check_password($username, $password);
+    },
+  });
+
 
 
   #######################################################################
@@ -42,14 +59,20 @@ sub startup {
 
   my $r         = $base_routes->bridge('/')->to('dashboard#prepare_stash');
 
-  $r->get('/')->to('dashboard#index');
+  $r->get('/login')->to('dashboard#login');
+  $r->post('/login')->to('dashboard#login_post');
 
-  $r->get('/project/new')->to('project#project_new');
-  $r->post('/project/new')->to('project#project_new_create');
+  my $r_auth    = $r->bridge('/')->to("dashboard#check_login");
 
-  my $project_r = $r->bridge('/project/:project_dir')->to('project#prepare_stash');
-  my $rex_r     = $r->bridge('/project/:project_dir/rexfile/:rexfile_dir')->to('rexfile#prepare_stash');
-  my $job_r     = $r->bridge('/project/:project_dir/job/:job_dir')->to('job#prepare_stash');
+  $r_auth->get('/logout')->to('dashboard#ctrl_logout');
+  $r_auth->get('/')->to('dashboard#index');
+
+  $r_auth->get('/project/new')->to('project#project_new');
+  $r_auth->post('/project/new')->to('project#project_new_create');
+
+  my $project_r = $r_auth->bridge('/project/:project_dir')->to('project#prepare_stash');
+  my $rex_r     = $r_auth->bridge('/project/:project_dir/rexfile/:rexfile_dir')->to('rexfile#prepare_stash');
+  my $job_r     = $r_auth->bridge('/project/:project_dir/job/:job_dir')->to('job#prepare_stash');
 
   $project_r->get('/nodes')->to('nodes#index');
   $project_r->get('/audit')->to('audit#index');

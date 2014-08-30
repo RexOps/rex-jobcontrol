@@ -25,3 +25,4 @@ vars.db.lock
 projects
 minion.data
 minion.data.lock
+passwd

@@ -1,6 +1,32 @@
 package Rex::JobControl::Dashboard;
 use Mojo::Base 'Mojolicious::Controller';
 
+sub check_login {
+  my ($self) = @_;
+  $self->redirect_to("/login") and return 0
+    unless ( $self->is_user_authenticated );
+  return 1;
+}
+
+sub login {
+  my $self = shift;
+  $self->render;
+}
+
+sub login_post {
+  my $self = shift;
+
+  if ( $self->authenticate( $self->param("username"), $self->param("password") ) ) {
+    $self->redirect_to("/");
+  }
+}
+
+sub ctrl_logout {
+  my $self = shift;
+  $self->logout;
+  $self->redirect_to("/");
+}
+
 sub prepare_stash {
   my $self = shift;
 

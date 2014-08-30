@@ -32,29 +32,9 @@
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             <li class="active"><a href="/">Home</a></li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Projects <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="<%= url_for '/project/new', controller => 'project', action => 'new_project' %>">New Project</a></li>
-% if ($project_count > 0) {
-                <li class="divider"></li>
-                <li class="dropdown-header">All Projects</li>
-  % for my $pro (@{ $projects }) {
-                <li><a href="/project/<%= $pro->directory %>"><%= $pro->name %></a></li>
-  % }
-% }
-              </ul>
-            </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Profile <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="/logout">Logout</a></li>
-              </ul>
-            </li>
-
-            <li><a href="#help">Help</a></li>
+              <li><a href="#help">Help</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
