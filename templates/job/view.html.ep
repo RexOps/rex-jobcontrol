@@ -114,6 +114,7 @@
       <thead>
         <tr>
           <th>Status</th>
+          <th>User</th>
           <th>Start</th>
           <th>End</th>
           <th>Rexfile</th>
@@ -124,6 +125,7 @@
       <tfoot>
         <tr>
           <th>Status</th>
+          <th>User</th>
           <th>Start</th>
           <th>End</th>
           <th>Rexfile</th>
@@ -133,11 +135,14 @@
       </tfoot>
       <tbody>
     % for my $log (@{ $job->get_logs }) {
+    % next unless $log->{start_time};
+    % next unless $log->{end_time};
     % for my $status_entry (@{ $log->{status} }) {
         <tr>
           % my $start_dt = DateTime->from_epoch(epoch => $log->{start_time});
           % my $end_dt = DateTime->from_epoch(epoch => $log->{end_time});
           <td><%= $status_entry->{status} %></td>
+          <td><%= $log->{user} %></td>
           <td><%= $start_dt->ymd("-") %> <%= $start_dt->hms(":") %></td>
           <td><%= $end_dt->ymd("-") %> <%= $end_dt->hms(":") %></td>
           <td><%= $status_entry->{rexfile} %></td>

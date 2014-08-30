@@ -19,15 +19,16 @@ sub register {
 
   $app->minion->add_task(execute_rexfile => sub {
 
-    my ($job, $project_dir, $job_dir, @server) = @_;
+    my ($job, $project_dir, $job_dir, $current_user, @server) = @_;
 
     $job->app->log->debug("Project: $project_dir");
     $job->app->log->debug("Job: $job_dir");
+    $job->app->log->debug("User: $current_user");
 
     eval {
       my $pr = $job->app->project($project_dir);
       my $job = $pr->get_job($job_dir);
-      $job->execute(@server);
+      $job->execute($current_user, @server);
       1;
     } or do {
       $job->app->log->debug("Error executing: $@");
