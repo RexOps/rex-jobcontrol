@@ -16,7 +16,9 @@ sub login {
 sub login_post {
   my $self = shift;
 
-  if ( $self->authenticate( $self->param("username"), $self->param("password") ) ) {
+  if (
+    $self->authenticate( $self->param("username"), $self->param("password") ) )
+  {
     $self->redirect_to("/");
   }
 }
@@ -32,15 +34,15 @@ sub prepare_stash {
 
   my @projects;
 
-  opendir(my $dh, $self->config->{project_path}) or die($!);
-  while(my $entry = readdir($dh)) {
-    next if (! -f $self->config->{project_path} . "/$entry/project.conf.yml" );
+  opendir( my $dh, $self->config->{project_path} ) or die($!);
+  while ( my $entry = readdir($dh) ) {
+    next if ( !-f $self->config->{project_path} . "/$entry/project.conf.yml" );
     push @projects, $self->project($entry);
   }
   closedir($dh);
 
-  $self->stash(project_count => scalar(@projects));
-  $self->stash(projects => \@projects);
+  $self->stash( project_count => scalar(@projects) );
+  $self->stash( projects      => \@projects );
 }
 
 sub index {

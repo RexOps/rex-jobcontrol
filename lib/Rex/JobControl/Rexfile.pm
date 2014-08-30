@@ -85,9 +85,8 @@ sub remove {
 
   $self->flash(
     {
-      title => "Rexfile removed",
-      message =>
-        "Rexfile <b>" . $rexfile->name . "</b> removed."
+      title   => "Rexfile removed",
+      message => "Rexfile <b>" . $rexfile->name . "</b> removed."
     }
   );
 

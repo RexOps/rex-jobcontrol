@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 package Rex::JobControl::Mojolicious::Plugin::MinionJobs;
 
 use strict;
@@ -15,45 +15,50 @@ use Rex::JobControl::Helper::Project;
 use base 'Mojolicious::Plugin';
 
 sub register {
-  my ($plugin, $app) = @_;
+  my ( $plugin, $app ) = @_;
 
-  $app->minion->add_task(execute_rexfile => sub {
+  $app->minion->add_task(
+    execute_rexfile => sub {
 
-    my ($job, $project_dir, $job_dir, $current_user, @server) = @_;
+      my ( $job, $project_dir, $job_dir, $current_user, @server ) = @_;
 
-    $job->app->log->debug("Project: $project_dir");
-    $job->app->log->debug("Job: $job_dir");
-    $job->app->log->debug("User: $current_user");
+      $job->app->log->debug("Project: $project_dir");
+      $job->app->log->debug("Job: $job_dir");
+      $job->app->log->debug("User: $current_user");
 
-    eval {
-      my $pr = $job->app->project($project_dir);
-      my $job = $pr->get_job($job_dir);
-      $job->execute($current_user, @server);
-      1;
-    } or do {
-      $job->app->log->debug("Error executing: $@");
-    };
+      eval {
+        my $pr  = $job->app->project($project_dir);
+        my $job = $pr->get_job($job_dir);
+        $job->execute( $current_user, @server );
+        1;
+      } or do {
+        $job->app->log->debug("Error executing: $@");
+      };
 
-  });
+    }
+  );
 
+  $app->minion->add_task(
+    checkout_rexfile => sub {
 
-  $app->minion->add_task(checkout_rexfile => sub {
+      my ( $job, $project_dir, $rexfile_name, $rexfile_url,
+        $rexfile_description )
+        = @_;
 
-    my ($job, $project_dir, $rexfile_name, $rexfile_url, $rexfile_description) = @_;
+      eval {
+        my $pr = $job->app->project($project_dir);
+        $pr->create_rexfile(
+          directory   => $rexfile_name,
+          url         => $rexfile_url,
+          description => $rexfile_description,
+        );
+        1;
+      } or do {
+        $job->app->log->debug("Error checkout_rexfile: $@");
+      };
 
-    eval {
-      my $pr = $job->app->project($project_dir);
-      $pr->create_rexfile(
-        directory   => $rexfile_name,
-        url         => $rexfile_url,
-        description => $rexfile_description,
-      );
-      1;
-    } or do {
-      $job->app->log->debug("Error checkout_rexfile: $@");
-    };
-
-  });
+    }
+  );
 }
 
 1;

@@ -5,8 +5,8 @@ use Data::Dumper;
 sub prepare_stash {
   my $self = shift;
 
-  my $project = $self->project($self->param("project_dir"));
-  $self->stash(project => $project);
+  my $project = $self->project( $self->param("project_dir") );
+  $self->stash( project => $project );
 }
 
 sub index {
@@ -22,9 +22,9 @@ sub project_new {
 sub project_new_create {
   my $self = shift;
 
-  $self->app->log->debug("Got project name: " . $self->param("project_name"));
+  $self->app->log->debug( "Got project name: " . $self->param("project_name") );
 
-  my $pr = $self->project($self->param("project_name"));
+  my $pr = $self->project( $self->param("project_name") );
   $pr->create;
 
   $self->redirect_to("/");
@@ -41,7 +41,7 @@ sub view {
 sub remove {
   my $self = shift;
 
-  my $project = $self->project($self->param("project_dir"));
+  my $project = $self->project( $self->param("project_dir") );
 
   $project->remove;
 

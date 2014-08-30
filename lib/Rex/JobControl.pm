@@ -6,7 +6,7 @@ use Mojo::Base 'Mojolicious';
 use Data::Dumper;
 use Rex::JobControl::Mojolicious::Command::jobcontrol;
 
-our $VERSION  = '0.0.1';
+our $VERSION = '0.0.1';
 
 # This method will run once at server start
 sub startup {
@@ -18,42 +18,43 @@ sub startup {
   #######################################################################
   # Load configuration
   #######################################################################
-  my @cfg = ("/etc/rex/jobcontrol.conf", "/usr/local/etc/rex/jobcontrol.conf", "jobcontrol.conf");
+  my @cfg = (
+    "/etc/rex/jobcontrol.conf", "/usr/local/etc/rex/jobcontrol.conf",
+    "jobcontrol.conf"
+  );
   my $cfg;
   for my $file (@cfg) {
-    if(-f $file) {
+    if ( -f $file ) {
       $cfg = $file;
       last;
     }
   }
 
-
   #######################################################################
   # Load plugins
   #######################################################################
-  $self->plugin("Config", file => $cfg);
+  $self->plugin( "Config", file => $cfg );
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::Project");
 
-  $self->plugin(Minion => {File  => $self->app->config->{minion_db_file}});
+  $self->plugin( Minion => { File => $self->app->config->{minion_db_file} } );
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::MinionJobs");
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::User");
-  $self->plugin("Authentication" => {
-    autoload_user => 1,
-    session_key   => $self->config->{session}->{key},
-    load_user     => sub {
-      my ($app, $uid) = @_;
+  $self->plugin(
+    "Authentication" => {
+      autoload_user => 1,
+      session_key   => $self->config->{session}->{key},
+      load_user     => sub {
+        my ( $app, $uid ) = @_;
 
-      my $user = $app->get_user($uid);
-      return $user; # user objekt
-    },
-    validate_user => sub {
-      my ($app, $username, $password) = @_;
-      return $app->check_password($username, $password);
-    },
-  });
-
-
-
+        my $user = $app->get_user($uid);
+        return $user;    # user objekt
+      },
+      validate_user => sub {
+        my ( $app, $username, $password ) = @_;
+        return $app->check_password( $username, $password );
+      },
+    }
+  );
 
   #######################################################################
   # Define routes
@@ -62,13 +63,12 @@ sub startup {
 
   # Normal route to controller
 
-
-  my $r         = $base_routes->bridge('/')->to('dashboard#prepare_stash');
+  my $r = $base_routes->bridge('/')->to('dashboard#prepare_stash');
 
   $r->get('/login')->to('dashboard#login');
   $r->post('/login')->to('dashboard#login_post');
 
-  my $r_auth    = $r->bridge('/')->to("dashboard#check_login");
+  my $r_auth = $r->bridge('/')->to("dashboard#check_login");
 
   $r_auth->get('/logout')->to('dashboard#ctrl_logout');
   $r_auth->get('/')->to('dashboard#index');
@@ -76,9 +76,12 @@ sub startup {
   $r_auth->get('/project/new')->to('project#project_new');
   $r_auth->post('/project/new')->to('project#project_new_create');
 
-  my $project_r = $r_auth->bridge('/project/:project_dir')->to('project#prepare_stash');
-  my $rex_r     = $r_auth->bridge('/project/:project_dir/rexfile/:rexfile_dir')->to('rexfile#prepare_stash');
-  my $job_r     = $r_auth->bridge('/project/:project_dir/job/:job_dir')->to('job#prepare_stash');
+  my $project_r =
+    $r_auth->bridge('/project/:project_dir')->to('project#prepare_stash');
+  my $rex_r = $r_auth->bridge('/project/:project_dir/rexfile/:rexfile_dir')
+    ->to('rexfile#prepare_stash');
+  my $job_r = $r_auth->bridge('/project/:project_dir/job/:job_dir')
+    ->to('job#prepare_stash');
 
   $project_r->get('/nodes')->to('nodes#index');
   $project_r->get('/audit')->to('audit#index');
@@ -113,7 +116,6 @@ sub startup {
 
   # Switch to installable "templates" directory
   $self->renderer->paths->[0] = $self->home->rel_dir('templates');
-
 
 }
 

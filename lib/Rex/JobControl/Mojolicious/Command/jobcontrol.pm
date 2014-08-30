@@ -5,14 +5,13 @@ use Data::Dumper;
 use Digest::Bcrypt;
 use Getopt::Long qw(GetOptionsFromArray :config no_auto_abbrev no_ignore_case);
 
-
 has description => 'JobControl Commands';
 has usage => sub { shift->extract_usage };
 
 sub run {
-  my ($self, $command, @args) = @_;
+  my ( $self, $command, @args ) = @_;
 
-  if(! $command || $command eq "help") {
+  if ( !$command || $command eq "help" ) {
     print "Usage:\n";
     print "$0 jobcontrol <command> [<options>]\n";
     print "\n";
@@ -22,11 +21,11 @@ sub run {
     exit 0;
   }
 
-  if($command eq "adduser") {
-    my ($user, $password);
+  if ( $command eq "adduser" ) {
+    my ( $user, $password );
 
     GetOptionsFromArray \@args,
-      'u|user=s'     => sub { $user = $_[1] },
+      'u|user=s'     => sub { $user     = $_[1] },
       'p|password=s' => sub { $password = $_[1] };
 
     $self->app->log->debug("Creating new user $user with password $password");
@@ -41,31 +40,33 @@ sub run {
 
     my $pw = $bcrypt->hexdigest;
 
-    open(my $fh, ">>", $self->app->config->{auth}->{passwd}) or die ($!);
+    open( my $fh, ">>", $self->app->config->{auth}->{passwd} ) or die($!);
     print $fh "$user:$pw\n";
     close($fh);
   }
 
-  if($command eq "deluser") {
+  if ( $command eq "deluser" ) {
 
     my $user;
 
-    GetOptionsFromArray \@args,
-      'u|user=s'     => sub { $user = $_[1] };
+    GetOptionsFromArray \@args, 'u|user=s' => sub { $user = $_[1] };
 
-    my @lines = grep { ! m/^$user:/ } eval { local(@ARGV) = ($self->app->config->{auth}->{passwd}); <>; };
+    my @lines =
+      grep { !m/^$user:/ }
+      eval { local (@ARGV) = ( $self->app->config->{auth}->{passwd} ); <>; };
 
-    open(my $fh, ">", $self->app->config->{auth}->{passwd}) or die ($!);
-    print $fh join("\n", @lines);   
+    open( my $fh, ">", $self->app->config->{auth}->{passwd} ) or die($!);
+    print $fh join( "\n", @lines );
     close($fh);
   }
 
-  if($command eq "listuser") {
-    my @lines = eval { local(@ARGV) = ($self->app->config->{auth}->{passwd}); <>; };
+  if ( $command eq "listuser" ) {
+    my @lines =
+      eval { local (@ARGV) = ( $self->app->config->{auth}->{passwd} ); <>; };
     chomp @lines;
 
     for my $l (@lines) {
-      my ($user, $pass) = split(/:/, $l);
+      my ( $user, $pass ) = split( /:/, $l );
       print "> $user\n";
     }
   }
