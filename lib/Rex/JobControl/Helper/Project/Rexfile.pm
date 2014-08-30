@@ -63,7 +63,8 @@ sub create {
 
   my $url = $self->{url};
   chwd "$rex_path", sub {
-    my @out = `/home/jan/Projekte/rex/rex/bin/rexify --init=$url 2>&1`;
+    my $rexify_cmd = $self->project->app->config->{rexify};
+    my @out = `$rexify_cmd --init=$url 2>&1`;
     chomp @out;
 
     $self->project->app->log->debug("Output of rexify --init=$url");
@@ -76,7 +77,8 @@ sub create {
   my $rex_info;
 
   chwd "$rex_path/$rexfile", sub {
-    my $out = `/home/jan/Projekte/rex/rex/bin/rex -Ty 2>&1`;
+    my $rex_cmd = $self->project->app->config->{rex};
+    my $out = `$rex_cmd -Ty 2>&1`;
     $rex_info = YAML::Load($out);
   };
 
@@ -124,7 +126,8 @@ sub reload {
   my $url = $self->url;
 
   chwd "$rex_path", sub {
-    my @out = `/home/jan/Projekte/rex/rex/bin/rexify --init=$url 2>&1`;
+    my $rexify_cmd = $self->project->app->config->{rexify};
+    my @out = `$rexify_cmd --init=$url 2>&1`;
     chomp @out;
 
     $self->project->app->log->debug("Output of rexify --init=$url");
@@ -137,7 +140,8 @@ sub reload {
   my $rex_info;
 
   chwd "$rex_path/$rexfile", sub {
-    my $out = `/home/jan/Projekte/rex/rex/bin/rex -Ty 2>&1`;
+    my $rex_cmd = $self->project->app->config->{rex};
+    my $out = `$rex_cmd -Ty 2>&1`;
     $rex_info = YAML::Load($out);
   };
 

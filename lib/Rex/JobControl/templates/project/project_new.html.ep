@@ -11,7 +11,7 @@
 
       <div class="form-group">
         <label for="project_name">Project Name</label>
-        <input type="text" class="form-control" id="project_name" name="project_name" placeholder="My new project">
+        <input type="text" class="form-control" id="project_name" name="project_name" placeholder="My new project" required autofocus>
       </div>
     </div>
   </div>

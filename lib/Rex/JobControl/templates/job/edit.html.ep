@@ -11,7 +11,7 @@
 
       <div class="form-group">
         <label for="job_name">Job Name</label>
-        <input type="text" class="form-control" id="job_name" name="job_name" placeholder="My new job" value="<%= $job->name %>">
+        <input type="text" class="form-control" id="job_name" name="job_name" placeholder="My new job" value="<%= $job->name %>" required>
       </div>
 
       <div class="form-group">
