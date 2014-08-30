@@ -114,6 +114,16 @@ sub job_execute_dispatch {
 
   $self->minion->enqueue(execute_rexfile => [$pr->directory, $job->directory, $self->param("sel_server")]);
 
+  $self->flash(
+    {
+      title => "Execution started",
+      message =>
+        "The execution of <b>" . $job->name . "</b> on <b>" . join(", ", $self->param("sel_server")) . "</b> started in background.",
+    }
+  );
+
+
+
   $self->redirect_to("/project/" . $pr->directory . "/job/" . $job->directory);
 }
 

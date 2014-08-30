@@ -27,27 +27,10 @@ sub startup {
   #######################################################################
   $self->plugin("Config", file => $cfg);
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::Project");
+
   $self->plugin(Minion => {File  => $self->app->config->{minion_db_file}});
+  $self->plugin("Rex::JobControl::Mojolicious::Plugin::MinionJobs");
 
-
-
-  #######################################################################
-  # Add minion tasks
-  #######################################################################
-  $self->app->minion->add_task(execute_rexfile => sub {
-    my ($job, $project_dir, $job_dir, @server) = @_;
-    $job->app->log->debug("Project: $project_dir");
-    $job->app->log->debug("Job: $job_dir");
-
-    eval {
-      my $pr = $self->app->project($project_dir);
-      my $job = $pr->get_job($job_dir);
-      $job->execute(@server);
-      1;
-    } or do {
-      $self->app->log->debug("Error executing: $@");
-    };
-  });
 
   #######################################################################
   # Define routes
