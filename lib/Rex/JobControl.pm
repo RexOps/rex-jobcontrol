@@ -1,8 +1,12 @@
 package Rex::JobControl;
 
+use File::Basename 'dirname';
+use File::Spec::Functions 'catdir';
 use Mojo::Base 'Mojolicious';
 use Data::Dumper;
 use Rex::JobControl::Mojolicious::Command::jobcontrol;
+
+our $VERSION  = '0.0.1';
 
 # This method will run once at server start
 sub startup {
@@ -22,6 +26,7 @@ sub startup {
       last;
     }
   }
+
 
   #######################################################################
   # Load plugins
@@ -46,6 +51,7 @@ sub startup {
       return $app->check_password($username, $password);
     },
   });
+
 
 
 
@@ -94,6 +100,21 @@ sub startup {
   $job_r->get('/delete')->to('job#job_delete');
   $job_r->get('/execute')->to('job#job_execute');
   $job_r->post('/execute')->to('job#job_execute_dispatch');
+
+  #######################################################################
+  # for the package
+  #######################################################################
+
+  # Switch to installable home directory
+  $self->home->parse( catdir( dirname(__FILE__), 'JobControl' ) );
+
+  # Switch to installable "public" directory
+  $self->static->paths->[0] = $self->home->rel_dir('public');
+
+  # Switch to installable "templates" directory
+  $self->renderer->paths->[0] = $self->home->rel_dir('templates');
+
+
 }
 
 1;
