@@ -23,6 +23,10 @@
         <label for="rexfile_url">Rexfile URL</label>
         <input type="text" class="form-control" id="rexfile_url" name="rexfile_url" placeholder="" required>
       </div>
+      <p>For example:</p>
+      <ul>
+        <li>https://github.com/RexOps/service-loadbalancer.git</li>
+      </ul>
 
     </div>
 
