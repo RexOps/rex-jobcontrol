@@ -62,7 +62,7 @@ sub create {
   File::Path::make_path($rex_path);
 
   my $rexfile = basename( $self->{url} );
-  $rexfile =~ s/\.git//;
+  $rexfile =~ s/(\.git|\.tar\.gz)$//;
 
   my $url = $self->{url};
   chwd "$rex_path", sub {
