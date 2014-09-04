@@ -39,6 +39,7 @@ sub startup {
   $self->plugin( Minion => { File => $self->app->config->{minion_db_file} } );
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::MinionJobs");
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::User");
+  $self->plugin("Rex::JobControl::Mojolicious::Plugin::Audit");
   $self->plugin(
     "Authentication" => {
       autoload_user => 1,

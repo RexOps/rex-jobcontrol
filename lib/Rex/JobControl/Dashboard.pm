@@ -1,4 +1,5 @@
 package Rex::JobControl::Dashboard;
+use attributes;
 use Mojo::Base 'Mojolicious::Controller';
 
 sub check_login {
@@ -20,6 +21,16 @@ sub login_post {
     $self->authenticate( $self->param("username"), $self->param("password") ) )
   {
     $self->redirect_to("/");
+  }
+  else {
+    $self->flash(
+      {
+        title   => "Authentication failed.",
+        message => "Username or password may be wrong.",
+      }
+    );
+
+    $self->redirect_to("/login");
   }
 }
 

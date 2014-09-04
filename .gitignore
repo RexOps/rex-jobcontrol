@@ -26,3 +26,4 @@ projects
 minion.data
 minion.data.lock
 passwd
+*.log
