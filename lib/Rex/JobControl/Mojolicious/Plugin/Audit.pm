@@ -15,14 +15,6 @@ use base 'Mojolicious::Plugin';
 use Rex::JobControl::Helper::AuditLog;
 use Data::Dumper;
 
-my %audit_calls = (
-  dashboard => {
-    login_post => {
-      params => [qw/username/]
-    }
-  },
-);
-
 sub register {
   my ( $plugin, $app ) = @_;
 
@@ -30,6 +22,8 @@ sub register {
     path  => $app->config->{log}->{audit_log},
     level => 'info'
   );
+
+  my %audit_calls = %{ $app->config->{audit} };
 
   $app->hook(
     around_action => sub {
