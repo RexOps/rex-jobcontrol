@@ -40,3 +40,12 @@ body {
   padding: 0px !important;
 }
 
+.logo {
+  background-image: url(/images/logo.png);
+  background-repeat: no-repeat;
+  width: 96px;
+  height: 69px;
+  margin: 0px;
+  margin-top: -15px;
+  padding: 0px;
+}
