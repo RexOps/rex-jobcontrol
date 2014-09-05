@@ -42,7 +42,7 @@
       </div>
       <div class="col-xs-10">
         <div class="checkbox" style="display: inline;">
-          <%= $formular->description %>
+          <%== $formular->description || "&nbsp;" %>
         </div>
       </div>
     </div>

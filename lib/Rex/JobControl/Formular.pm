@@ -11,6 +11,22 @@ use Data::Dumper;
 use Cwd;
 use YAML;
 
+sub check_public {
+  my ($self) = @_;
+
+  my $project = $self->project( $self->param("project_dir") );
+  $self->stash( project => $project );
+
+  my $formular = $project->get_formular( $self->param("formular_dir") );
+  $self->stash( formular => $formular );
+
+  return 1 if($formular->public eq "yes");
+
+  $self->redirect_to("/login") and return 0
+    unless ( $self->is_user_authenticated );
+  return 1;
+}
+
 sub prepare_stash {
   my $self = shift;
 

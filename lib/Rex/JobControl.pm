@@ -69,6 +69,8 @@ sub startup {
   $r->get('/login')->to('dashboard#login');
   $r->post('/login')->to('dashboard#login_post');
 
+  my $r_formular_execute = $r->bridge('/project/:project_dir/formular/:formular_dir/execute')->to("formular#check_public");
+
   my $r_auth = $r->bridge('/')->to("dashboard#check_login");
 
   $r_auth->get('/logout')->to('dashboard#ctrl_logout');
@@ -101,8 +103,8 @@ sub startup {
   $form_r->get('/')->to('formular#view');
   $form_r->get('/edit')->to('formular#edit');
   $form_r->post('/edit')->to('formular#edit_save');
-  $form_r->get('/execute')->to('formular#view_formular');
-  $form_r->post('/execute')->to('formular#view_formular');
+  $r_formular_execute->get('/execute')->to('formular#view_formular');
+  $r_formular_execute->post('/execute')->to('formular#view_formular');
   $form_r->post('/execute/delete_data_item')->to('formular#delete_data_item');
   $form_r->get('/delete')->to('formular#remove');
 
