@@ -95,6 +95,8 @@ sub startup {
   $project_r->get('/delete')->to('project#remove');
   $project_r->get('/rexfile/new')->to('rexfile#rexfile_new');
   $project_r->post('/rexfile/new')->to('rexfile#rexfile_new_create');
+  $project_r->get('/formular/new')->to('formular#formular_new');
+  $project_r->post('/formular/new')->to('formular#formular_new_create');
 
   $form_r->get('/execute')->to('formular#view_formular');
   $form_r->post('/execute')->to('formular#view_formular');

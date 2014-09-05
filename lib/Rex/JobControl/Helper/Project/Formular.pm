@@ -37,12 +37,12 @@ sub load {
 
   if ( -f $self->_config_file() ) {
     $self->{formular_configuration} = YAML::LoadFile( $self->_config_file );
+
+    my $steps_file = File::Spec->catfile( $self->project->project_path(),
+      "formulars", $self->{directory}, "steps.yml" );
+
+    $self->{steps} = YAML::LoadFile($steps_file);
   }
-
-  my $steps_file = File::Spec->catfile( $self->project->project_path(),
-    "formulars", $self->{directory}, "steps.yml" );
-
-  $self->{steps} = YAML::LoadFile($steps_file);
 }
 
 sub _config_file {
@@ -59,6 +59,28 @@ sub steps {
 sub formulars {
   my ($self) = @_;
   return $self->{steps}->{formulars};
+}
+
+sub create {
+  my ( $self, %data ) = @_;
+
+  my $form_path = File::Spec->catdir( $self->project->project_path,
+    "formulars", $self->{directory} );
+
+  $self->project->app->log->debug(
+    "Creating new formular $self->{directory} in $form_path.");
+
+  File::Path::make_path($form_path);
+
+  my $steps = $data{steps};
+
+  delete $data{directory};
+  delete $data{steps};
+
+  my $form_configuration = {%data};
+
+  YAML::DumpFile( "$form_path/formular.conf.yml", $form_configuration );
+  YAML::DumpFile( "$form_path/steps.yml", $steps );
 }
 
 1;

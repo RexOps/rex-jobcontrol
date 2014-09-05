@@ -214,4 +214,13 @@ sub get_formular {
   );
 }
 
+sub create_formular {
+  my ( $self, %data ) = @_;
+
+  my $form =
+    Rex::JobControl::Helper::Project::Formular->new( project => $self, %data );
+
+  $form->create(%data);
+}
+
 1;

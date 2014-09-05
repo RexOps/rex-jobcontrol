@@ -27,3 +27,4 @@ minion.data
 minion.data.lock
 passwd
 *.log
+upload

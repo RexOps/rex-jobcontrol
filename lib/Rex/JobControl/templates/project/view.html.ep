@@ -69,8 +69,10 @@
 
 <a href="/project/<%= $project->directory %>/job/new" class="btn btn-sm btn-info">New Job</a>
 
+<hr>
 
-<h3>Rexfiles</h3>
+
+<h4>Rexfiles</h4>
 % if ( scalar (@{ $rexfiles }) == 0 ) {
 <p>Currently this project has no Rexfiles.</p>
 % } else {
@@ -109,6 +111,49 @@
 % }
 
 <a href="/project/<%= $project->directory %>/rexfile/new" class="btn btn-sm btn-info">New Rexfile</a>
+
+<h4>Formulars</h4>
+% if ( scalar (@{ $rexfiles }) == 0 ) {
+<p>Currently this project has no Formulars.</p>
+% } else {
+
+% for my $formular (@{ $project->formulars }) {
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><a href="/project/<%= $project->directory %>/formular/<%= $formular->directory %>"><%= $formular->name %></a></h3>
+  </div>
+  <div class="panel-body">
+
+    <div>
+      <div class="col-xs-2">
+        Steps
+      </div>
+      <div class="col-xs-10">
+        <%= join(", ", map { $_->{label} } @{ $formular->steps }) %>
+      </div>
+    </div>
+
+      <div class="col-xs-12">
+        <hr>
+        <a
+          href="/project/<%= $project->directory %>/formular/<%= $formular->directory %>/execute?form_step=0"
+          class="btn btn-xs btn-success">Run</a>
+
+        <button
+          href="/project/<%= $project->directory %>/formular/<%= $formular->directory %>/delete"
+          formular_name="<%= $formular->name %>"
+          class="delete-formular-button btn btn-xs btn-danger">Remove</button>
+      </div>
+
+  </div>
+</div>
+% }
+
+% }
+
+<a href="/project/<%= $project->directory %>/formular/new" class="btn btn-sm btn-info">New Formular</a>
+
+
 
 <hr>
 

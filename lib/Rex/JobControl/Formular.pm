@@ -8,6 +8,8 @@ package Rex::JobControl::Formular;
 use Mojo::Base 'Mojolicious::Controller';
 use DateTime;
 use Data::Dumper;
+use Cwd;
+use YAML;
 
 sub prepare_stash {
   my $self = shift;
@@ -131,11 +133,11 @@ sub view_formular {
   $self->stash(step_fields => \@cur_field_names);
   $self->stash(formular_config => $current_step);
 
-  if(ref $current_forms->{$formular->name}->{$current_step->{name}} eq "ARRAY") {
+  if(ref $current_forms->{$formular->name}->{$current_step->{name}} eq "ARRAY" && scalar(@{ $current_forms->{$formular->name}->{$current_step->{name}} }) > 0) {
     $self->stash(step_data => $current_forms->{$formular->name}->{$current_step->{name}}->[-1]);
     $self->stash(all_step_data => $current_forms->{$formular->name}->{$current_step->{name}});
   }
-  elsif($current_forms->{$formular->name}->{$current_step->{name}} && scalar(keys %{$current_forms->{$formular->name}->{$current_step->{name}}}) > 0) {
+  elsif(ref $current_forms->{$formular->name}->{$current_step->{name}} eq "HASH" && scalar(keys %{$current_forms->{$formular->name}->{$current_step->{name}}}) > 0) {
     $self->stash(step_data => $current_forms->{$formular->name}->{$current_step->{name}});
     $self->stash(all_step_data => [$current_forms->{$formular->name}->{$current_step->{name}}]);
   }
@@ -155,7 +157,7 @@ sub view_formular {
     # save result in yaml file
     # and call rexfile
 
-    print STDERR Dumper $current_forms->{$formular->name};
+    $self->app->log->debug(Dumper($current_forms->{$formular->name}));
 
     $current_forms->{$formular->name} = {};
     $self->session(formulars => $current_forms);
@@ -168,5 +170,54 @@ sub view_formular {
 
   $self->render;
 }
+
+
+sub formular_new {
+  my $self = shift;
+  $self->render;
+}
+
+sub formular_new_create {
+  my $self = shift;
+
+  $self->app->log->debug( "Got project name: " . $self->param("project_dir") );
+  $self->app->log->debug( "Got formular name: " . $self->param("formular_name") );
+
+  my $formular_file = $self->param("formular_file");
+  $formular_file->move_to(
+        getcwd() . "/upload/" . $formular_file->filename );
+
+  eval {
+
+    my $ref = YAML::LoadFile(getcwd() . "/upload/" . $formular_file->filename );
+    my $pr = $self->project( $self->param("project_dir") );
+
+    $pr->create_formular(
+      directory        => $self->param("formular_name"),
+      name             => $self->param("formular_name"),
+      description      => $self->param("formular_description"),
+      steps            => $ref,
+    );
+
+    $self->flash(
+      {
+        title   => "Formular created",
+        message => "A new formular <b>"
+          . $self->param("formular_name")
+          . "</b> was created.",
+      }
+    );
+
+    1;
+  } or do {
+    $self->flash({
+      title => "Error parsing YAML",
+      message => "Failed parsing YAML file.<br>$@",
+    });
+  };
+
+  $self->redirect_to( "/project/" . $self->param("project_dir") );
+}
+
 
 1;
