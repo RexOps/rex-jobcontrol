@@ -222,7 +222,7 @@ sub view_formular {
     $self->minion->enqueue(
       execute_rexfile => [
         $project->directory,         $formular->job->directory,
-        $self->current_user->{name}, $current_forms->{ $formular->name },
+        ($self->current_user ? $self->current_user->{name} : ''), $current_forms->{ $formular->name },
         @{ $formular->servers },
       ]
     );
