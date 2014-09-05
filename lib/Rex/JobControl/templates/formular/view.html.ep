@@ -49,6 +49,30 @@
 
     <div>
       <div class="col-xs-2">
+        Job
+      </div>
+      <div class="col-xs-10">
+        <div class="checkbox" style="display: inline;">
+          <%= $formular->job->name %>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-xs-2">
+        Servers
+      </div>
+      <div class="col-xs-10">
+        <div class="checkbox" style="display: inline;">
+          <%= join(", ", @{ $formular->servers }) %>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div>
+      <div class="col-xs-2">
         Public
       </div>
       <div class="col-xs-10">

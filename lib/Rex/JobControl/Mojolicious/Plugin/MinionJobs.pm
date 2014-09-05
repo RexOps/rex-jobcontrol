@@ -20,7 +20,7 @@ sub register {
   $app->minion->add_task(
     execute_rexfile => sub {
 
-      my ( $job, $project_dir, $job_dir, $current_user, @server ) = @_;
+      my ( $job, $project_dir, $job_dir, $current_user, $cmdb, @server ) = @_;
 
       $job->app->log->debug("Project: $project_dir");
       $job->app->log->debug("Job: $job_dir");

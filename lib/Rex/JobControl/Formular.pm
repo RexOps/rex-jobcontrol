@@ -203,6 +203,14 @@ sub view_formular {
 
     $self->app->log->debug( Dumper( $current_forms->{ $formular->name } ) );
 
+    $self->minion->enqueue(
+      execute_rexfile => [
+        $project->directory,         $formular->job->directory,
+        $self->current_user->{name}, $current_forms->{ $formular->name },
+        @{ $formular->servers },
+      ]
+    );
+
     $current_forms->{ $formular->name } = {};
     $self->session( formulars => $current_forms );
 
@@ -239,6 +247,8 @@ sub formular_new_create {
       name        => $self->param("formular_name"),
       description => $self->param("formular_description"),
       public      => ( $self->param("formular_public") eq "true" ? 1 : 0 ),
+      job         => $self->param("formular_job"),
+      servers     => [ $self->param("sel_server") ],
       steps       => $ref,
     );
 
@@ -292,6 +302,8 @@ sub edit_save {
       name        => $self->param("formular_name"),
       description => $self->param("formular_description"),
       public      => ( $self->param("formular_public") eq "true" ? 1 : 0 ),
+      job         => $self->param("formular_job"),
+      servers     => [ $self->param("sel_server") ],
       ( $formular_file->filename ? ( steps => $ref ) : () ),
     );
 
@@ -311,7 +323,9 @@ sub edit_save {
     $self->flash(
       {
         title   => "Error updating Formular",
-        message => "Formular <b>" . $formular->name . "</b> update failed.<br>$@",
+        message => "Formular <b>"
+          . $formular->name
+          . "</b> update failed.<br>$@",
       }
     );
 

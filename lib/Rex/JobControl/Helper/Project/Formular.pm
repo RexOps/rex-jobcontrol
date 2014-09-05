@@ -13,6 +13,7 @@ use File::Spec;
 use File::Path;
 use YAML;
 use Rex::JobControl::Helper::Chdir;
+use Rex::JobControl::Helper::Project::Job;
 use Data::Dumper;
 
 sub new {
@@ -29,9 +30,15 @@ sub new {
 
 sub name        { (shift)->{formular_configuration}->{name} }
 sub description { (shift)->{formular_configuration}->{description} }
-sub public      { (shift)->{formular_configuration}->{public} ? "yes" : "no" }
-sub project     { (shift)->{project} }
-sub directory   { (shift)->{directory} }
+
+sub job {
+  my $self = shift;
+  $self->project->get_job( $self->{formular_configuration}->{job} );
+}
+sub public { (shift)->{formular_configuration}->{public} ? "yes" : "no" }
+sub servers { (shift)->{formular_configuration}->{servers} }
+sub project   { (shift)->{project} }
+sub directory { (shift)->{directory} }
 
 sub load {
   my ($self) = @_;
@@ -95,8 +102,8 @@ sub update {
   $self->project->app->log->debug(
     "Updating formular $self->{directory} in $form_path.");
 
-  if(exists $data{steps}) {
-    YAML::DumpFile( "$form_path/steps.yml",         $data{steps} );
+  if ( exists $data{steps} ) {
+    YAML::DumpFile( "$form_path/steps.yml", $data{steps} );
   }
 
   delete $data{directory};

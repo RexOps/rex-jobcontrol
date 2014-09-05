@@ -126,6 +126,16 @@
 
     <div>
       <div class="col-xs-2">
+        Job
+      </div>
+      <div class="col-xs-10">
+        <%= $formular->job->name %>
+      </div>
+    </div>
+
+
+    <div>
+      <div class="col-xs-2">
         Steps
       </div>
       <div class="col-xs-10">

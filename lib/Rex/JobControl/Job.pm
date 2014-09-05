@@ -131,7 +131,7 @@ sub job_execute_dispatch {
   $self->minion->enqueue(
     execute_rexfile => [
       $pr->directory,              $job->directory,
-      $self->current_user->{name}, $self->param("sel_server"),
+      $self->current_user->{name}, {}, $self->param("sel_server"),
     ]
   );
 
