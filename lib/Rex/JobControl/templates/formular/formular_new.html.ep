@@ -19,6 +19,23 @@
         <textarea class="form-control" id="formular_description" name="formular_description"></textarea>
       </div>
 
+      <div class="form-group">
+        <label for="formular_public">Public Formular</label>
+        <div class="checkbox" style="display: inline;">
+          <label>
+            <input type="radio" name="formular_public" value="true" checked="checked"> Formular is public
+          </label>
+        </div>
+        <div class="checkbox" style="display: inline;">
+          <label>
+            <input type="radio" name="formular_public" value="false"> Formular is private
+          </label>
+        </div>
+
+      </div>
+
+
+
       %= file_field 'formular_file'
 
     </div>

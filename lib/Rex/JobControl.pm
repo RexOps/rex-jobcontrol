@@ -98,9 +98,13 @@ sub startup {
   $project_r->get('/formular/new')->to('formular#formular_new');
   $project_r->post('/formular/new')->to('formular#formular_new_create');
 
+  $form_r->get('/')->to('formular#view');
+  $form_r->get('/edit')->to('formular#edit');
+  $form_r->post('/edit')->to('formular#edit_save');
   $form_r->get('/execute')->to('formular#view_formular');
   $form_r->post('/execute')->to('formular#view_formular');
   $form_r->post('/execute/delete_data_item')->to('formular#delete_data_item');
+  $form_r->get('/delete')->to('formular#remove');
 
   $rex_r->get('/')->to('rexfile#view');
   $rex_r->get('/reload')->to('rexfile#reload');

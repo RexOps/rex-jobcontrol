@@ -29,6 +29,7 @@ sub new {
 
 sub name        { (shift)->{formular_configuration}->{name} }
 sub description { (shift)->{formular_configuration}->{description} }
+sub public      { (shift)->{formular_configuration}->{public} ? "yes" : "no" }
 sub project     { (shift)->{project} }
 sub directory   { (shift)->{directory} }
 
@@ -38,8 +39,10 @@ sub load {
   if ( -f $self->_config_file() ) {
     $self->{formular_configuration} = YAML::LoadFile( $self->_config_file );
 
-    my $steps_file = File::Spec->catfile( $self->project->project_path(),
-      "formulars", $self->{directory}, "steps.yml" );
+    my $steps_file = File::Spec->catfile(
+      $self->project->project_path(), "formulars",
+      $self->{directory},             "steps.yml"
+    );
 
     $self->{steps} = YAML::LoadFile($steps_file);
   }
@@ -80,7 +83,35 @@ sub create {
   my $form_configuration = {%data};
 
   YAML::DumpFile( "$form_path/formular.conf.yml", $form_configuration );
-  YAML::DumpFile( "$form_path/steps.yml", $steps );
+  YAML::DumpFile( "$form_path/steps.yml",         $steps );
+}
+
+sub update {
+  my ( $self, %data ) = @_;
+
+  my $form_path = File::Spec->catdir( $self->project->project_path,
+    "formulars", $self->{directory} );
+
+  $self->project->app->log->debug(
+    "Updating formular $self->{directory} in $form_path.");
+
+  if(exists $data{steps}) {
+    YAML::DumpFile( "$form_path/steps.yml",         $data{steps} );
+  }
+
+  delete $data{directory};
+  delete $data{steps};
+
+  my $form_configuration = {%data};
+  YAML::DumpFile( "$form_path/formular.conf.yml", $form_configuration );
+}
+
+sub remove {
+  my ($self) = @_;
+  my $formular_path = File::Spec->catdir( $self->project->project_path,
+    "formulars", $self->{directory} );
+
+  File::Path::remove_tree($formular_path);
 }
 
 1;

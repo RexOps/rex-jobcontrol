@@ -178,6 +178,10 @@ $(document).ready(function() {
     delete_project("Remove " + $(this).attr("project_name") + "?", $(this).attr("href"));
   });
 
+  $(".delete-formular-button").click(function() {
+    delete_formular("Remove " + $(this).attr("formular_name") + "?", $(this).attr("href"));
+  });
+
 });
 
 
