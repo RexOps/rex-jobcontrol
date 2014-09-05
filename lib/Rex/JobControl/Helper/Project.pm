@@ -14,6 +14,7 @@ use File::Path;
 use YAML;
 use Rex::JobControl::Helper::Project::Job;
 use Rex::JobControl::Helper::Project::Rexfile;
+use Rex::JobControl::Helper::Project::Formular;
 
 sub new {
   my $that  = shift;
@@ -177,6 +178,40 @@ sub all_server {
 sub remove {
   my ($self) = @_;
   File::Path::remove_tree( $self->project_path() );
+}
+
+sub formular_count {
+  my ($self) = @_;
+  my $forms = $self->formulars;
+  return scalar( @{$forms} );
+}
+
+sub formulars {
+  my ($self) = @_;
+
+  my @formulars;
+
+  opendir( my $dh, $self->project_path() . "/formulars" )
+    or die( "Error: $! (" . $self->project_path() . ")" );
+  while ( my $entry = readdir($dh) ) {
+    next if ( !-f $self->project_path() . "/formulars/$entry/formular.conf.yml" );
+    push @formulars,
+      Rex::JobControl::Helper::Project::Formular->new(
+      directory => $entry,
+      project   => $self
+      );
+  }
+  closedir($dh);
+
+  return \@formulars;
+}
+
+sub get_formular {
+  my ( $self, $dir ) = @_;
+  return Rex::JobControl::Helper::Project::Formular->new(
+    directory => $dir,
+    project   => $self
+  );
 }
 
 1;

@@ -4,6 +4,10 @@ use Data::Dumper;
 
 sub index {
   my $self = shift;
+
+  my $project = $self->project( $self->param("project_dir") );
+  $self->stash(rexfiles => $project->rexfiles);
+
   $self->render;
 }
 

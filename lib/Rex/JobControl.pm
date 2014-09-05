@@ -83,6 +83,8 @@ sub startup {
     ->to('rexfile#prepare_stash');
   my $job_r = $r_auth->bridge('/project/:project_dir/job/:job_dir')
     ->to('job#prepare_stash');
+  my $form_r = $r_auth->bridge('/project/:project_dir/formular/:formular_dir')
+    ->to('formular#prepare_stash');
 
   $project_r->get('/nodes')->to('nodes#index');
   $project_r->get('/audit')->to('audit#index');
@@ -93,6 +95,10 @@ sub startup {
   $project_r->get('/delete')->to('project#remove');
   $project_r->get('/rexfile/new')->to('rexfile#rexfile_new');
   $project_r->post('/rexfile/new')->to('rexfile#rexfile_new_create');
+
+  $form_r->get('/execute')->to('formular#view_formular');
+  $form_r->post('/execute')->to('formular#view_formular');
+  $form_r->post('/execute/delete_data_item')->to('formular#delete_data_item');
 
   $rex_r->get('/')->to('rexfile#view');
   $rex_r->get('/reload')->to('rexfile#reload');
