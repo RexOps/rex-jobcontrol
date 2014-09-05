@@ -87,21 +87,28 @@ sub remove {
 }
 
 sub execute {
-  my ( $self, $user, @server ) = @_;
+  my ( $self, $user, $cmdb, @server ) = @_;
   $self->project->app->log->debug( "Executing job: " . $self->name );
   my $job_path = File::Spec->catdir( $self->project->project_path,
     "jobs", $self->{directory} );
 
   my $pid          = time;
   my $execute_path = "$job_path/execute/$pid";
+  my $cmdb_path    = "$job_path/execute/$pid/cmdb";
 
   my @status;
 
   File::Path::make_path($execute_path);
+  File::Path::make_path($cmdb_path);
 
   $self->project->app->log->debug(
     "Executing-Strategy: " . $self->execute_strategy );
   $self->project->app->log->debug( "Fail-Strategy: " . $self->fail_strategy );
+
+  if ($cmdb) {
+    $self->project->app->log->debug("Creating cmdb file");
+    YAML::DumpFile( "$cmdb_path/default.yml", $cmdb );
+  }
 
   if ( $self->execute_strategy eq "step" ) {
 
@@ -115,8 +122,12 @@ sub execute {
         my ( $rexfile_name, $task ) = split( /\//, $s );
         my $rexfile = $self->project->get_rexfile($rexfile_name);
 
-        my $ret =
-          $rexfile->execute( task => $task, server => [$srv], job => $self );
+        my $ret = $rexfile->execute(
+          task   => $task,
+          server => [$srv],
+          job    => $self,
+          ( $cmdb ? ( cmdb => $cmdb_path ) : () )
+        );
         push @status, $ret->[0];
 
         if ( exists $ret->[0]->{terminate_message} ) {
@@ -139,8 +150,12 @@ sub execute {
         my ( $rexfile_name, $task ) = split( /\//, $s );
         my $rexfile = $self->project->get_rexfile($rexfile_name);
 
-        my $ret =
-          $rexfile->execute( task => $task, server => [$srv], job => $self );
+        my $ret = $rexfile->execute(
+          task   => $task,
+          server => [$srv],
+          job    => $self,
+          ( $cmdb ? ( cmdb => $cmdb_path ) : () )
+        );
         push @status, $ret->[0];
 
         if ( exists $ret->[0]->{terminate_message} ) {

@@ -82,10 +82,14 @@ sub create {
 
   File::Path::make_path($form_path);
 
+print STDERR Dumper (\%data);
+
   my $steps = $data{steps};
 
   delete $data{directory};
   delete $data{steps};
+
+print STDERR Dumper (\%data);
 
   my $form_configuration = {%data};
 

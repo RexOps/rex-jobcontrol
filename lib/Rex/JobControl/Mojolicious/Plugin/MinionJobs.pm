@@ -29,7 +29,7 @@ sub register {
       eval {
         my $pr  = $job->app->project($project_dir);
         my $job = $pr->get_job($job_dir);
-        $job->execute( $current_user, @server );
+        $job->execute( $current_user, $cmdb, @server );
         1;
       } or do {
         $job->app->log->debug("Error executing: $@");

@@ -245,7 +245,7 @@ sub formular_new_create {
     $pr->create_formular(
       directory   => $self->param("formular_name"),
       name        => $self->param("formular_name"),
-      description => $self->param("formular_description"),
+      description => $self->param("formular_description") || "",
       public      => ( $self->param("formular_public") eq "true" ? 1 : 0 ),
       job         => $self->param("formular_job"),
       servers     => [ $self->param("sel_server") ],

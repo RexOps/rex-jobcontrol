@@ -175,6 +175,7 @@ sub execute {
   my $task   = $option{task};
   my $job    = $option{job};
   my @server = @{ $option{server} };
+  my $cmdb   = $option{cmdb};
 
   my $rex_path = File::Spec->catdir( $self->project->project_path,
     "rex", $self->{directory}, $self->rexfile );
@@ -186,8 +187,11 @@ sub execute {
     my $child_exit_status;
     chwd $rex_path, sub {
       my ( $chld_out, $chld_in, $pid );
-      $pid = open2( $chld_out, $chld_in, $self->project->app->config->{rex},
-        '-H', $srv, '-t', 1, '-F', '-m', $task );
+      $pid = open2(
+        $chld_out, $chld_in, $self->project->app->config->{rex},
+        '-H', $srv, '-t', 1, '-F', '-m',
+        ( $cmdb ? ( '-O', "cmdb_path=$cmdb/default.yml" ) : () ), $task
+      );
 
       while ( my $line = <$chld_out> ) {
         chomp $line;

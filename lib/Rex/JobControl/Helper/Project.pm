@@ -74,6 +74,7 @@ sub create {
   File::Path::make_path($project_path);
   File::Path::make_path( File::Spec->catdir( $project_path, "jobs" ) );
   File::Path::make_path( File::Spec->catdir( $project_path, "rex" ) );
+  File::Path::make_path( File::Spec->catdir( $project_path, "formulars" ) );
 
   my $project_configuration = { name => $self->{name}, };
 
