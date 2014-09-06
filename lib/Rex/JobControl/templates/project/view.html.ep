@@ -162,6 +162,8 @@
           href="/project/<%= $project->directory %>/formular/<%= $formular->directory %>/execute?form_step=0"
           class="btn btn-xs btn-success">Run</a>
 
+        <a href="/project/<%= $project->directory %>/formular/<%= $formular->directory %>/edit" class="btn btn-xs btn-warning">Edit</a>
+
         <button
           href="/project/<%= $project->directory %>/formular/<%= $formular->directory %>/delete"
           formular_name="<%= $formular->name %>"
