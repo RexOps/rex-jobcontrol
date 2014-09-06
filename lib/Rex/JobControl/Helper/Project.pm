@@ -195,7 +195,8 @@ sub formulars {
   opendir( my $dh, $self->project_path() . "/formulars" )
     or die( "Error: $! (" . $self->project_path() . ")" );
   while ( my $entry = readdir($dh) ) {
-    next if ( !-f $self->project_path() . "/formulars/$entry/formular.conf.yml" );
+    next
+      if ( !-f $self->project_path() . "/formulars/$entry/formular.conf.yml" );
     push @formulars,
       Rex::JobControl::Helper::Project::Formular->new(
       directory => $entry,

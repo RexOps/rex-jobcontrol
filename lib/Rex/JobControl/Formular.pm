@@ -5,6 +5,7 @@
 # vim: set expandtab:
 
 package Rex::JobControl::Formular;
+
 use Mojo::Base 'Mojolicious::Controller';
 use DateTime;
 use Data::Dumper;
@@ -20,9 +21,9 @@ sub check_public {
   my $formular = $project->get_formular( $self->param("formular_dir") );
   $self->stash( formular => $formular );
 
-  $self->stash(is_logged_in => $self->is_user_authenticated);
+  $self->stash( is_logged_in => $self->is_user_authenticated );
 
-  return 1 if($formular->public eq "yes");
+  return 1 if ( $formular->public eq "yes" );
 
   $self->redirect_to("/login") and return 0
     unless ( $self->is_user_authenticated );
@@ -38,7 +39,7 @@ sub prepare_stash {
   my $formular = $project->get_formular( $self->param("formular_dir") );
   $self->stash( formular => $formular );
 
-  $self->stash(is_logged_in => $self->is_user_authenticated);
+  $self->stash( is_logged_in => $self->is_user_authenticated );
 }
 
 sub delete_data_item {
@@ -225,8 +226,10 @@ sub view_formular {
 
     $self->minion->enqueue(
       execute_rexfile => [
-        $project->directory,         $formular->job->directory,
-        ($self->current_user ? $self->current_user->{name} : ''), $current_forms->{ $formular->name },
+        $project->directory,
+        $formular->job->directory,
+        ( $self->current_user ? $self->current_user->{name} : '' ),
+        $current_forms->{ $formular->name },
         @{ $formular->servers },
       ]
     );

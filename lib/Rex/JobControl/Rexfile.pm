@@ -5,6 +5,7 @@
 # vim: set expandtab:
 
 package Rex::JobControl::Rexfile;
+
 use Mojo::Base 'Mojolicious::Controller';
 use Cwd;
 

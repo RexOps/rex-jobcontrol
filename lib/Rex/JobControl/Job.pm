@@ -5,6 +5,7 @@
 # vim: set expandtab:
 
 package Rex::JobControl::Job;
+
 use Mojo::Base 'Mojolicious::Controller';
 use DateTime;
 
@@ -17,7 +18,7 @@ sub prepare_stash {
   my $job = $project->get_job( $self->param("job_dir") );
   $self->stash( job => $job );
 
-  $self->stash(is_logged_in => $self->is_user_authenticated);
+  $self->stash( is_logged_in => $self->is_user_authenticated );
 }
 
 sub edit_save {
@@ -133,7 +134,8 @@ sub job_execute_dispatch {
   $self->minion->enqueue(
     execute_rexfile => [
       $pr->directory,              $job->directory,
-      $self->current_user->{name}, undef, $self->param("sel_server"),
+      $self->current_user->{name}, undef,
+      $self->param("sel_server"),
     ]
   );
 

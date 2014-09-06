@@ -1,3 +1,4 @@
+
 =encoding UTF-8
 
 =head1 NAME
@@ -148,7 +149,9 @@ sub startup {
   $r->get('/login')->to('dashboard#login');
   $r->post('/login')->to('dashboard#login_post');
 
-  my $r_formular_execute = $r->bridge('/project/:project_dir/formular/:formular_dir/execute')->to("formular#check_public");
+  my $r_formular_execute =
+    $r->bridge('/project/:project_dir/formular/:formular_dir/execute')
+    ->to("formular#check_public");
 
   my $r_auth = $r->bridge('/')->to("dashboard#check_login");
 

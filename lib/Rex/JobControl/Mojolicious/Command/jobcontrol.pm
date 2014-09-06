@@ -1,4 +1,5 @@
 package Mojolicious::Command::jobcontrol;
+
 use Mojo::Base 'Mojolicious::Command';
 
 use Data::Dumper;

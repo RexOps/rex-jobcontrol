@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-   
+
 package Rex::JobControl::Helper::AuditLog;
 
 use base 'Mojo::Log';
@@ -11,11 +11,11 @@ use Mojo::JSON;
 use DateTime;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = $proto->SUPER::new(@_);
+  my $self  = $proto->SUPER::new(@_);
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   $self->{json} = Mojo::JSON->new;
 
@@ -23,13 +23,13 @@ sub new {
 }
 
 sub audit {
-  my ($self, $data) = @_;
-  my ($package, $filename, $line) = caller;
+  my ( $self, $data ) = @_;
+  my ( $package, $filename, $line ) = caller;
 
   my $dt = DateTime->now;
   $data->{package} = $package;
 
-  $self->info($self->json->encode($data));
+  $self->info( $self->json->encode($data) );
 }
 
 sub json { (shift)->{json} }

@@ -1,10 +1,10 @@
 package Rex::JobControl::Dashboard;
-use attributes;
+
 use Mojo::Base 'Mojolicious::Controller';
 
 sub check_login {
   my ($self) = @_;
-  $self->stash(is_logged_in => $self->is_user_authenticated);
+  $self->stash( is_logged_in => $self->is_user_authenticated );
   $self->redirect_to("/login") and return 0
     unless ( $self->is_user_authenticated );
   return 1;

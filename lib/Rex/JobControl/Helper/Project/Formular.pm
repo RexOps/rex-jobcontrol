@@ -36,7 +36,7 @@ sub job {
   $self->project->get_job( $self->{formular_configuration}->{job} );
 }
 sub public { (shift)->{formular_configuration}->{public} ? "yes" : "no" }
-sub servers { (shift)->{formular_configuration}->{servers} }
+sub servers   { (shift)->{formular_configuration}->{servers} }
 sub project   { (shift)->{project} }
 sub directory { (shift)->{directory} }
 
@@ -82,14 +82,14 @@ sub create {
 
   File::Path::make_path($form_path);
 
-print STDERR Dumper (\%data);
+  print STDERR Dumper( \%data );
 
   my $steps = $data{steps};
 
   delete $data{directory};
   delete $data{steps};
 
-print STDERR Dumper (\%data);
+  print STDERR Dumper( \%data );
 
   my $form_configuration = {%data};
 
