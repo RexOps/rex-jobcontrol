@@ -8,22 +8,22 @@ Currently the Webinterface is in early development stage. So if you see bugs, ha
 
 * Login:
 
-![Login](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/images/login.png)
+![Login](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/screenshots/login.png)
 
 
 * Project:
 
-![Project view](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/images/projects.png)
+![Project view](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/screenshots/projects.png)
 
 
 * Job:
 
-![Job view](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/images/job.png)
+![Job view](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/screenshots/job.png)
 
 
 * Execute:
 
-![Execute a job](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/images/execute.png)
+![Execute a job](https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/screenshots/execute.png)
 
 
 ## Installation

@@ -30,6 +30,6 @@ passwd
 .*\.md
 upload
 .*\.log
-images
 projects
 Rex\-JobControl\-\d+.*
+screenshots
