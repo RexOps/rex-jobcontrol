@@ -37,6 +37,8 @@ sub prepare_stash {
 
   my $formular = $project->get_formular( $self->param("formular_dir") );
   $self->stash( formular => $formular );
+
+  $self->stash(is_logged_in => $self->is_user_authenticated);
 }
 
 sub delete_data_item {

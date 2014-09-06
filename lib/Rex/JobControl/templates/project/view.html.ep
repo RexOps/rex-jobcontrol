@@ -5,7 +5,17 @@
 
 % my $jobs     = $project->jobs;
 % my $rexfiles = $project->rexfiles;
+% my $formulars = $project->formulars;
 
+% my $job_count = scalar (@{ $jobs });
+% my $rexfile_count = scalar (@{ $rexfiles });
+% my $formular_count = scalar (@{ $formulars });
+
+% if($job_count == 0 && $rexfile_count == 0 && $formular_count == 0) {
+
+<p>It seems that you just created this project. To get started you first have to upload/register one or more Rexfiles. After this you can create jobs and formulars.</p>
+
+% }
 
 <h3>Jobs</h3>
 % if ( scalar (@{ $jobs }) == 0 ) {
@@ -113,11 +123,14 @@
 <a href="/project/<%= $project->directory %>/rexfile/new" class="btn btn-sm btn-info">New Rexfile</a>
 
 <h4>Formulars</h4>
-% if ( scalar (@{ $rexfiles }) == 0 ) {
+% if ( scalar (@{ $formulars }) == 0 ) {
 <p>Currently this project has no Formulars.</p>
+% if ($job_count == 0) {
+<p>To create a formular you first have to create a job for it.</p>
+% }
 % } else {
 
-% for my $formular (@{ $project->formulars }) {
+% for my $formular (@{ $formulars }) {
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title"><a href="/project/<%= $project->directory %>/formular/<%= $formular->directory %>"><%= $formular->name %></a></h3>

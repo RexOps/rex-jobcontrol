@@ -16,6 +16,8 @@ sub prepare_stash {
 
   my $job = $project->get_job( $self->param("job_dir") );
   $self->stash( job => $job );
+
+  $self->stash(is_logged_in => $self->is_user_authenticated);
 }
 
 sub edit_save {

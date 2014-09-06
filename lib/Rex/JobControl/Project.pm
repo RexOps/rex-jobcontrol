@@ -7,6 +7,8 @@ sub prepare_stash {
 
   my $project = $self->project( $self->param("project_dir") );
   $self->stash( project => $project );
+
+  $self->stash(is_logged_in => $self->is_user_authenticated);
 }
 
 sub index {
