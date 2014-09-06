@@ -146,7 +146,7 @@ sub reload {
 
   chwd "$rex_path/$rexfile", sub {
     my $rex_cmd = $self->project->app->config->{rex};
-    my $out     = `$rex_cmd -Ty 2>&1`;
+    my $out     = `$rex_cmd -Ty`;
     $rex_info = YAML::Load($out);
   };
 

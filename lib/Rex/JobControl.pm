@@ -33,6 +33,60 @@ To install Rex::JobControl you can use the normal cpan tools. We recommend using
 
  cpanm Rex::JobControl
 
+After installing you have to create the configuration file in on of the locations mentioned in CONFIGURATION.
+
+Before you first start the server you have to run the I<setup> command.
+
+ rex_job_control jobcontrol setup
+
+This command will create all the necesarry directories you have configured in your configuration file.
+
+=head2 CENTOS 7
+
+If you want to install Rex::JobControl on CentOS 7 you have to follow these steps.
+
+=over 4
+
+=item Install build dependencies
+
+ yum install perl-DateTime perl-App-cpanminus gcc m4 flex bison git wget
+
+=item Install Rex::JobControl
+
+ cpanm Rex::JobControl
+
+=item Create a configuration file
+
+For this, you can use the example configuration file from the git repostiroy.
+
+ mkdir /etc/rex
+ wget -O /etc/rex/jobcontrol.conf https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/jobcontrol.conf
+
+=item Preparing to start the services
+
+Now after you have configured Rex::JobControl you have to create all the necessary folders. You can do this with a build-in command.
+
+ rex_job_control jobcontrol setup
+
+This will also create a user I<admin> with password I<admin>.
+
+=item Starting services
+
+Rex::JobControl can create systemd unit files for you. To do this run the following command.
+
+ rex_job_control jobcontrol systemd -c
+
+After this you can start the Rex::JobWorker server and worker daemon (minion).
+
+ systemctl start rex-jobcontrol.service
+ systemctl start rex-jobcontrol-minion.service
+
+=item Accessing the Webfrontend
+
+Now you can access the webfrontend via http://$your-server:8080/. If you can't connect, make sure the firewall doesn't block the traffic to post 8080.
+
+=back
+
 =head1 CONFIGURATION
 
 The configuration file is looked up in 3 locations.
