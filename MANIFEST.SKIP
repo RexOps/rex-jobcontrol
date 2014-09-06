@@ -29,7 +29,6 @@ vars\..*
 passwd
 .*\.md
 upload
-.*\.conf
 .*\.log
 images
 projects
