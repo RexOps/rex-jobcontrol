@@ -1,3 +1,84 @@
+=encoding UTF-8
+
+=head1 NAME
+
+Rex::JobControl - Job-Control Webinterface for Rex
+
+=head1 DESCRIPTION
+
+(R)?ex is a configuration- and deployment management framework. You can write tasks in a file named I<Rexfile>.
+
+You can find examples and howtos on L<http://rexify.org/>
+
+This is the official webinterface for Rex.
+
+=head1 GETTING HELP
+
+=over 4
+
+=item * Web Site: L<http://rexify.org/>
+
+=item * IRC: irc.freenode.net #rex
+
+=item * Bug Tracker: L<https://github.com/RexOps/rex-jobcontrol/issues>
+
+=item * Twitter: L<http://twitter.com/RexOps>
+
+=back
+
+=head1 INSTALLATION
+
+To install Rex::JobControl you can use the normal cpan tools. We recommend using cpanm from http://cpanmin.us/.
+
+ cpanm Rex::JobControl
+
+=head1 CONFIGURATION
+
+The configuration file is looked up in 3 locations.
+
+=over 4
+
+=item /etc/rex/jobcontrol.conf
+
+=item /usr/local/etc/rex/jobcontrol.conf
+
+=item ./jobcontrol.conf
+
+=back
+
+You find an example configuration file on https://github.com/RexOps/rex-jobcontrol.
+
+=head1 RUNNING
+
+Rex::JobControl consists of 2 services. The Webinterface and the Worker.
+
+To start the worker you have to run the following command. You can start as many worker as you need/want.
+
+ rex_job_control minion worker
+
+To start the Webinterface you have to run this command. This will start a webserver at port 8080. 
+
+ hypnotoad /usr/bin/rex_job_control 
+
+
+=head1 MANAGING USERS
+
+Currently there is no webinterface to manage the users, but you can use a cli command to do this.
+
+Add user:
+
+ rex_job_control jobcontrol adduser -u $user -p $password
+
+Remove user:
+
+ rex_job_control jobcontrol deluser -u $user
+
+List user:
+
+ rex_job_control jobcontrol listuser
+
+=cut
+
 package Rex::JobControl;
 
 use File::Basename 'dirname';
@@ -5,8 +86,6 @@ use File::Spec::Functions 'catdir';
 use Mojo::Base 'Mojolicious';
 use Data::Dumper;
 use Rex::JobControl::Mojolicious::Command::jobcontrol;
-
-our $VERSION = '0.0.1';
 
 # This method will run once at server start
 sub startup {
