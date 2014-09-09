@@ -41,6 +41,54 @@ Before you first start the server you have to run the I<setup> command.
 
 This command will create all the necesarry directories you have configured in your configuration file.
 
+=head2 UBUNTU
+
+If you want to install Rex::JobControl on Ubuntu 14.04 you have to follow these steps.
+
+=over 4
+
+=item Install build dependencies
+
+ apt-get install cpanminus libdatetime-perl gcc make automake m4 bison flex libssh2-1-dev libssl-dev
+
+=item Install Rex::JobControl
+
+ cpanm Rex::JobControl
+
+=item Create a configuration file
+
+For this, you can use the example configuration file from the git repostiroy.
+
+ mkdir /etc/rex
+ wget -O /etc/rex/jobcontrol.conf https://raw.githubusercontent.com/RexOps/rex-jobcontrol/master/jobcontrol.conf
+
+=item Preparing to start the services
+
+Now after you have configured Rex::JobControl you have to create all the necessary folders. You can do this with a build-in command.
+
+ rex_job_control jobcontrol setup
+
+This will also create a user I<admin> with password I<admin>.
+
+=item Starting services
+
+Rex::JobControl can create systemd unit files for you. To do this run the following command.
+
+ rex_job_control jobcontrol upstart -c
+
+After this you can start the Rex::JobWorker server and worker daemon (minion).
+
+ service rex-jobcontrol start
+ service rex-jobcontrol-minion start
+
+=item Accessing the Webfrontend
+
+Now you can access the webfrontend via http://$your-server:8080/. If you can't connect, make sure the firewall doesn't block the traffic to post 8080.
+
+
+
+=back
+
 =head2 CENTOS 7
 
 If you want to install Rex::JobControl on CentOS 7 you have to follow these steps.
@@ -203,6 +251,7 @@ sub startup {
   $r->get('/login')->to('dashboard#login');
   $r->post('/login')->to('dashboard#login_post');
 
+
   my $r_formular_execute =
     $r->bridge('/project/:project_dir/formular/:formular_dir/execute')
     ->to("formular#check_public");
@@ -211,6 +260,7 @@ sub startup {
 
   $r_auth->get('/logout')->to('dashboard#ctrl_logout');
   $r_auth->get('/')->to('dashboard#index');
+  $r_auth->get('/help')->to('help#index');
 
   $r_auth->get('/project/new')->to('project#project_new');
   $r_auth->post('/project/new')->to('project#project_new_create');

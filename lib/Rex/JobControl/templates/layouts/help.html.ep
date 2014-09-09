@@ -55,61 +55,19 @@
 % }
               </ul>
             </li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Jobs <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="/project/<%= $project->directory %>/job/new">New Job</a></li>
-% if ($project->job_count > 0) {
-                <li class="divider"></li>
-                <li class="dropdown-header">All Jobs in <%= $project->name %></li>
-  % for my $job (@{ $project->jobs }) {
-                <li><a href="/project/<%= $project->directory %>/job/<%= $job->name %>"><%= $job->name %></a></li>
-  % }
-% }
-              </ul>
-            </li>
-            <li class="dropdown active">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Rexfiles <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="/project/<%= $project->directory %>/rexfile/new">New Rexfile</a></li>
-% if ($project->rexfile_count > 0) {
-                <li class="divider"></li>
-                <li class="dropdown-header">All Rexfiles in <%= $project->name %></li>
-  % for my $rexfile (@{ $project->rexfiles }) {
-                <li><a href="/project/<%= $project->directory %>/rexfile/<%= $rexfile->name %>"><%= $rexfile->name %></a></li>
-  % }
-% }
-              </ul>
-            </li>
 
-            <li class="dropdown ">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Formulars <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="/project/<%= $project->directory %>/formular/new">New Formular</a></li>
-% if ($project->formular_count > 0) {
-                <li class="divider"></li>
-                <li class="dropdown-header">All Formulars in <%= $project->name %></li>
-  % for my $formular (@{ $project->formulars }) {
-                <li><a href="/project/<%= $project->directory %>/formular/<%= $formular->name %>"><%= $formular->name %></a></li>
-  % }
-% }
-              </ul>
-            </li>
-
-
-
-            <li><a href="/project/<%= $project->directory %>/nodes">Nodes</a></li>
-            <li><a href="/project/<%= $project->directory %>/audit">Audit</a></li>
- 
           </ul>
+
+
           <ul class="nav navbar-nav navbar-right">
+          % if ($is_logged_in) {
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Profile <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="/logout">Logout</a></li>
               </ul>
             </li>
-
+          % }
 
             <li><a href="/help">Help</a></li>
           </ul>

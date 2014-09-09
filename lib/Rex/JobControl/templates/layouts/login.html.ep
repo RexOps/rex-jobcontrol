@@ -34,7 +34,7 @@
             <li class="active"><a href="/">Home</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-              <li><a href="#help">Help</a></li>
+            <li><a href="/help">Help</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
