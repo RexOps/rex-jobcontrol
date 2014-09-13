@@ -40,7 +40,7 @@
           <td><%= $task->{state} %></td>
           <td><%= $task->{args}->[2] %></td>
           <td><%= $start_dt->ymd("-") %> <%= $start_dt->hms(":") %></td>
-          <td><%= join(", ", @{ $task->{args} }[3..$#{ $task->{args} }]) %></td>
+          <td><%= join(", ", @{ $task->{args} }[4..$#{ $task->{args} }]) %></td>
         </tr>
     % }
       </tbody>

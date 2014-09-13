@@ -81,6 +81,24 @@ sub create {
   YAML::DumpFile( "$project_path/project.conf.yml", $project_configuration );
 }
 
+sub update {
+  my ($self) = @_;
+
+  my $project_path = $self->project_path;
+  YAML::DumpFile( "$project_path/project.conf.yml", $self->{project_configuration} );
+}
+
+sub add_node {
+  my ($self, $host) = @_;
+
+  if(! exists $self->{project_configuration}->{nodes}) {
+    $self->{project_configuration}->{nodes} = [];
+  }
+  
+  push @{ $self->{project_configuration}->{nodes} }, $host;
+  $self->update;
+}
+
 sub job_count {
   my ($self) = @_;
   my $jobs = $self->jobs;

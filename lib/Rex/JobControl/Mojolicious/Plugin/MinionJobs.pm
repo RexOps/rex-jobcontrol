@@ -45,6 +45,8 @@ sub register {
         $rexfile_description )
         = @_;
 
+      $job->app->log->debug("checkout_rexfile: got params: " . join(", ", @_));
+
       eval {
         my $pr = $job->app->project($project_dir);
         $pr->create_rexfile(

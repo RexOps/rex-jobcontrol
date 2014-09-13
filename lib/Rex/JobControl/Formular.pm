@@ -224,12 +224,31 @@ sub view_formular {
 
     $self->app->log->debug( Dumper( $current_forms->{ $formular->name } ) );
 
+    my $cmdb_data          = $current_forms->{ $formular->name };
+    my $cmdb_data_with_key = {};
+    my @formulars_with_key = grep { exists $_->{key} } @{ $formular->steps };
+
+    for my $form_with_key (@formulars_with_key) {
+      if ( ref $cmdb_data->{ $form_with_key->{name} } ne "ARRAY" ) {
+        $cmdb_data->{ $form_with_key->{name} } =
+          [ $cmdb_data->{ $form_with_key->{name} } ];
+      }
+      for my $x ( @{ $cmdb_data->{ $form_with_key->{name} } } ) {
+        $cmdb_data_with_key->{ $form_with_key->{name} }
+          ->{ $x->{ $form_with_key->{key} } } = $x;
+      }
+    }
+
+    if ( scalar @formulars_with_key > 0 ) {
+      $cmdb_data = { %{$cmdb_data}, %{$cmdb_data_with_key} };
+    }
+
     $self->minion->enqueue(
       execute_rexfile => [
         $project->directory,
         $formular->job->directory,
         ( $self->current_user ? $self->current_user->{name} : '' ),
-        $current_forms->{ $formular->name },
+        $cmdb_data,
         @{ $formular->servers },
       ]
     );

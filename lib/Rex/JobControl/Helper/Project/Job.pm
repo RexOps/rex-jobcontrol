@@ -107,7 +107,7 @@ sub execute {
 
   if ($cmdb) {
     $self->project->app->log->debug("Creating cmdb file");
-    YAML::DumpFile( "$cmdb_path/default.yml", $cmdb );
+    YAML::DumpFile( "$cmdb_path/jobcontrol.yml", $cmdb );
   }
 
   if ( $self->execute_strategy eq "step" ) {

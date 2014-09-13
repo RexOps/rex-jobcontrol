@@ -114,7 +114,7 @@ sub all_server {
 
   for my $group ( keys %{ $self->groups } ) {
     push @all_server,
-      ( map { $_ = { name => $_->{name}, group => $group } }
+      ( map { $_ = { name => $_->{name}, group => $group, %{ $_ } } }
         @{ $self->groups->{$group} } );
   }
 
@@ -182,7 +182,42 @@ sub execute {
 
   my @ret;
 
+  my $all_server = $self->all_server;
+
   for my $srv (@server) {
+
+    my ($srv_object) = grep { $_->{name} eq $srv } @{ $all_server };
+
+    if(exists $srv_object->{auth}) {
+      if(exists $srv_object->{auth}->{auth_type}) {
+        $ENV{REX_AUTH_TYPE} = $srv_object->{auth}->{auth_type};
+      }
+
+      if(exists $srv_object->{auth}->{public_key}) {
+        $ENV{REX_PUBLIC_KEY} = $srv_object->{auth}->{public_key};
+      }
+
+      if(exists $srv_object->{auth}->{private_key}) {
+        $ENV{REX_PRIVATE_KEY} = $srv_object->{auth}->{private_key};
+      }
+
+      if(exists $srv_object->{auth}->{user}) {
+        $ENV{REX_USER} = $srv_object->{auth}->{user};
+      }
+
+      if(exists $srv_object->{auth}->{password}) {
+        $ENV{REX_PASSWORD} = $srv_object->{auth}->{password};
+      }
+
+      if(exists $srv_object->{auth}->{sudo_password}) {
+        $ENV{REX_SUDO_PASSWORD} = $srv_object->{auth}->{sudo_password};
+      }
+
+      if(exists $srv_object->{auth}->{sudo}) {
+        $ENV{REX_SUDO} = $srv_object->{auth}->{sudo};
+      }
+
+    }
 
     my $child_exit_status;
     chwd $rex_path, sub {
@@ -190,7 +225,7 @@ sub execute {
       $pid = open2(
         $chld_out, $chld_in, $self->project->app->config->{rex},
         '-H', $srv, '-t', 1, '-F', '-m',
-        ( $cmdb ? ( '-O', "cmdb_path=$cmdb/default.yml" ) : () ), $task
+        ( $cmdb ? ( '-O', "cmdb_path=$cmdb/jobcontrol.yml" ) : () ), $task
       );
 
       while ( my $line = <$chld_out> ) {

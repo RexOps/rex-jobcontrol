@@ -12,4 +12,13 @@ sub index {
   $self->render;
 }
 
+sub add_node {
+  my $self = shift;
+
+  my $project = $self->project( $self->param("project_dir") );
+  $project->add_node( { name => $self->param("nodename") } );
+
+  $self->redirect_to( "/project/" . $project->directory );
+}
+
 1;
