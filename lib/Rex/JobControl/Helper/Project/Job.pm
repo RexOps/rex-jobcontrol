@@ -147,6 +147,13 @@ sub execute {
   SERVER: for my $srv (@server) {
 
     STEP: for my $s ( @{ $self->steps } ) {
+
+        if(-f $self->project->project_path . "/next_server.txt") {
+          $srv = eval { local(@ARGV, $/) = ($self->project->project_path . "/next_server.txt"); <>; };
+          chomp $srv;
+          unlink $self->project->project_path . "/next_server.txt";
+        }
+
         my ( $rexfile_name, $task ) = split( /\//, $s );
         my $rexfile = $self->project->get_rexfile($rexfile_name);
 

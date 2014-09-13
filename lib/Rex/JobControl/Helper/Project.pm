@@ -191,6 +191,11 @@ sub all_server {
     push @all_server, @{ $rex->all_server };
   }
 
+  $self->load;
+  for my $srv (@{ $self->{project_configuration}->{nodes} }) {
+    push @all_server, $srv;
+  }
+
   return \@all_server;
 }
 

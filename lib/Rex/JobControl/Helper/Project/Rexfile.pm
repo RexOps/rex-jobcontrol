@@ -15,6 +15,7 @@ use YAML;
 use IPC::Open2;
 
 use Rex::JobControl::Helper::Chdir;
+use Data::Dumper;
 
 sub new {
   my $that  = shift;
@@ -182,7 +183,7 @@ sub execute {
 
   my @ret;
 
-  my $all_server = $self->all_server;
+  my $all_server = $self->project->all_server;
 
   for my $srv (@server) {
 
@@ -218,6 +219,8 @@ sub execute {
       }
 
     }
+
+    $ENV{JOBCONTROL_PROJECT_PATH} = $self->project->project_path;
 
     my $child_exit_status;
     chwd $rex_path, sub {
