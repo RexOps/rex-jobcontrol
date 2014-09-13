@@ -23,13 +23,11 @@
         </tr>
       </tfoot>
       <tbody>
-  % for my $rexfile (@{ $project->rexfiles }) {
-    % for my $srv (@{ $rexfile->all_server }) {
+  % for my $srv (@{ $project->all_server }) {
         <tr>
           <td><%= $srv->{name} %></td>
           <td><%= $srv->{group} %></td>
         </tr>
-    % }
   % }
       </tbody>
     </table>
