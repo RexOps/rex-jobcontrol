@@ -72,7 +72,7 @@ This will also create a user I<admin> with password I<admin>.
 
 =item Starting services
 
-Rex::JobControl can create systemd unit files for you. To do this run the following command.
+Rex::JobControl can create upstart files for you. To do this run the following command.
 
  rex_job_control jobcontrol upstart -c
 

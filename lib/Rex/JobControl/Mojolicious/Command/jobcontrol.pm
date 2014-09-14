@@ -22,6 +22,7 @@ sub run {
     print "\n";
     print "setup         create all required folders\n";
     print "systemd -c    create systemd unit files for JobControl and Minion.\n";
+    print "upstart -c    create upstart files for JobControl and Minion.\n";
     print "\n";
     print "User Management:\n";
     print "\n";
@@ -42,6 +43,20 @@ sub run {
 
     if($create_unit) {
       $self->create_systemd_unit();
+    }
+  }
+
+  if($command eq "upstart") {
+    my ($create_unit, $start, $stop, $restart) = @_;
+
+    GetOptionsFromArray \@args,
+      'c|create-unit'     => sub { $create_unit = 1 },
+      's|start' => sub { $start = 1 },
+      'r|restart' => sub { $restart = 1 },
+      'k|stop' => sub { $stop = 1 };
+
+    if($create_unit) {
+      $self->create_upstart_unit();
     }
   }
 
@@ -133,6 +148,41 @@ sub add_user {
 
   open( my $fh, ">>", $self->app->config->{auth}->{passwd} ) or die($!);
   print $fh "$user:$pw\n";
+  close($fh);
+
+}
+
+sub create_upstart_unit {
+  my ($self) = @_;
+
+  my $pid_file = $self->app->config->{hypnotoad}->{pid_file};
+
+  my $whereis_hypnotoad = qx{which hypnotoad};
+  chomp $whereis_hypnotoad;
+
+  open(my $fh, ">", "/etc/init/rex-jobcontrol.conf") or die ($!);
+  print $fh qq~# Rex::JobControl
+
+description     "Rex::JobControl upstart job"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+pre-start exec $whereis_hypnotoad $0
+post-stop exec $whereis_hypnotoad $0 -s
+~;
+  close($fh);
+
+  open(my $fh, ">", "/etc/init/rex-jobcontrol-minion.conf") or die ($!);
+  print $fh qq~# Rex::JobControl Minion
+
+description     "Rex::JobControl Minion upstart job"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+exec /usr/local/bin/rex_job_control minion worker
+~;
   close($fh);
 
 }
