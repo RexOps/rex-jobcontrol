@@ -173,7 +173,7 @@ post-stop exec $whereis_hypnotoad $0 -s
 ~;
   close($fh);
 
-  open(my $fh, ">", "/etc/init/rex-jobcontrol-minion.conf") or die ($!);
+  open($fh, ">", "/etc/init/rex-jobcontrol-minion.conf") or die ($!);
   print $fh qq~# Rex::JobControl Minion
 
 description     "Rex::JobControl Minion upstart job"
