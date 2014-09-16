@@ -304,6 +304,7 @@ sub startup {
   $job_r->get('/delete')->to('job#job_delete');
   $job_r->get('/execute')->to('job#job_execute');
   $job_r->post('/execute')->to('job#job_execute_dispatch');
+  $job_r->get('/:job_id/output')->to('job#view_output_log');
 
   #######################################################################
   # for the package

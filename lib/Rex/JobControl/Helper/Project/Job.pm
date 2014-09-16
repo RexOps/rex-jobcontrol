@@ -50,6 +50,25 @@ sub _config_file {
     "jobs", $self->{directory}, "job.conf.yml" );
 }
 
+sub get_output_log {
+  my ($self, $job_id) = @_;
+
+  my $job_path = File::Spec->catdir( $self->project->project_path,
+    "jobs", $self->{directory} );
+  my $execute_path = "$job_path/execute/$job_id";
+
+  my $logfile = "$execute_path/output.log";
+
+  if(! -f $logfile) {
+    $self->project->app->log->error("This job doesn't have an output.log file.");
+    return "No output.log found.";
+  }
+ 
+  my @loglines = eval { local (@ARGV, $/) = ($logfile); <>; };
+
+  return \@loglines;
+}
+
 sub create {
   my ( $self, %data ) = @_;
 
@@ -96,6 +115,8 @@ sub execute {
   my $execute_path = "$job_path/execute/$pid";
   my $cmdb_path    = "$job_path/execute/$pid/cmdb";
 
+  $ENV{JOBCONTROL_EXECUTION_PATH} = $execute_path;
+
   my @status;
 
   File::Path::make_path($execute_path);
@@ -109,6 +130,14 @@ sub execute {
     $self->project->app->log->debug("Creating cmdb file");
     YAML::DumpFile( "$cmdb_path/jobcontrol.yml", $cmdb );
   }
+
+  YAML::DumpFile(
+    "$execute_path/running.status.yml",
+    {
+      start_time => $pid,
+      user       => $user,
+    }
+  );
 
   if ( $self->execute_strategy eq "step" ) {
 
@@ -174,6 +203,8 @@ sub execute {
     }
 
   }
+
+  unlink "$execute_path/running.status.yml";
 
   YAML::DumpFile(
     "$execute_path/run.status.yml",
@@ -248,8 +279,20 @@ sub get_logs {
     my @entries;
     opendir( my $dh, $execute_path ) or die($!);
     while ( my $entry = readdir($dh) ) {
-      next if ( !-f "$execute_path/$entry/run.status.yml" );
-      push @entries, YAML::LoadFile("$execute_path/$entry/run.status.yml");
+      next if($entry eq "." || $entry eq "..");
+      if ( -f "$execute_path/$entry/running.status.yml" ) {
+        my $run_status = YAML::LoadFile("$execute_path/$entry/running.status.yml");
+        $run_status->{id} = $entry;
+        $run_status->{finished} = 0;
+        push @entries, $run_status;
+      }
+
+      if( -f "$execute_path/$entry/run.status.yml" ) {
+        my $run_status = YAML::LoadFile("$execute_path/$entry/run.status.yml");
+        $run_status->{id} = $entry;
+        $run_status->{finished} = 1;
+        push @entries, $run_status;
+      }
     }
     closedir($dh);
 
@@ -265,5 +308,8 @@ sub get_logs {
 
   }
 }
+
+
+
 
 1;

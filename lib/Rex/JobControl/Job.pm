@@ -154,4 +154,9 @@ sub job_execute_dispatch {
     "/project/" . $pr->directory . "/job/" . $job->directory );
 }
 
+sub view_output_log {
+  my $self = shift;
+  $self->render;
+}
+
 1;

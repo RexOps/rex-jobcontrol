@@ -120,6 +120,7 @@
           <th>Rexfile</th>
           <th>Task</th>
           <th>Server</th>
+          <th>&nbsp;</th>
         </tr>
       </thead>
       <tfoot>
@@ -131,12 +132,13 @@
           <th>Rexfile</th>
           <th>Task</th>
           <th>Server</th>
+          <th>&nbsp;</th>
         </tr>
       </tfoot>
       <tbody>
     % for my $log (@{ $job->get_logs }) {
     % next unless $log->{start_time};
-    % next unless $log->{end_time};
+    % if ( exists $log->{start_time} && exists $log->{end_time} ) {
     % for my $status_entry (@{ $log->{status} }) {
         <tr>
           % my $start_dt = DateTime->from_epoch(epoch => $log->{start_time});
@@ -148,6 +150,20 @@
           <td><%= $status_entry->{rexfile} %></td>
           <td><%= $status_entry->{task} %></td>
           <td><%= $status_entry->{server} %></td>
+          <td>[<a href="/project/<%= $project->directory %>/job/<%= $job->directory %>/<%= $log->{id} %>/output">Log</a>]</td>
+        </tr>
+    % }
+    % } else {
+        <tr>
+          % my $start_dt = DateTime->from_epoch(epoch => $log->{start_time});
+          <td>running</td>
+          <td><%= $log->{user} %></td>
+          <td><%= $start_dt->ymd("-") %> <%= $start_dt->hms(":") %></td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>[<a href="/project/<%= $project->directory %>/job/<%= $job->directory %>/<%= $log->{id} %>/output">Log</a>]</td>
         </tr>
     % }
     % }

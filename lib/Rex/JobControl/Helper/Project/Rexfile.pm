@@ -12,7 +12,7 @@ use File::Spec;
 use File::Path;
 use File::Basename;
 use YAML;
-use IPC::Open2;
+use Capture::Tiny qw'capture';
 
 use Rex::JobControl::Helper::Chdir;
 use Data::Dumper;
@@ -225,20 +225,21 @@ sub execute {
     my $child_exit_status;
     chwd $rex_path, sub {
       my ( $chld_out, $chld_in, $pid );
-      $pid = open2(
-        $chld_out, $chld_in, $self->project->app->config->{rex},
-        '-H', $srv, '-t', 1, '-F', '-m',
-        ( $cmdb ? ( '-O', "cmdb_path=$cmdb/jobcontrol.yml" ) : () ), $task
-      );
 
-      while ( my $line = <$chld_out> ) {
-        chomp $line;
-        $self->project->app->log->debug("rex: $line");
-      }
+      $self->project->app->log->debug("Writing output to: $ENV{JOBCONTROL_EXECUTION_PATH}/output.log");
 
-      waitpid( $pid, 0 );
+      my $out_fh = IO::File->new("$ENV{JOBCONTROL_EXECUTION_PATH}/output.log", "a+");
+      my $err_fh = IO::File->new("$ENV{JOBCONTROL_EXECUTION_PATH}/output.log", "a+");
+      capture {
+        system(
+          $self->project->app->config->{rex},
+          '-H', $srv, '-t', 1, '-F', '-m',
+          ( $cmdb ? ( '-O', "cmdb_path=$cmdb/jobcontrol.yml" ) : () ), $task 
+        );
 
-      $child_exit_status = $? >> 8;
+        $child_exit_status = $?;
+      } stdout => $out_fh, stderr => $err_fh;
+
     };
 
     if ( $child_exit_status == 0 ) {
