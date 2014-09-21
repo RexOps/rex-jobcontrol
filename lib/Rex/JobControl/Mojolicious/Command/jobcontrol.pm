@@ -20,6 +20,8 @@ sub run {
     print "\n";
     print "Commands:\n";
     print "\n";
+    print "version       print the version.\n";
+    print "\n";
     print "setup         create all required folders\n";
     print "systemd -c    create systemd unit files for JobControl and Minion.\n";
     print "upstart -c    create upstart files for JobControl and Minion.\n";
@@ -29,6 +31,11 @@ sub run {
     print "adduser -u username -p password        will add a new user\n";
     print "deluser -u username                    will delete a user\n";
     print "listuser                               list all users\n";
+    exit 0;
+  }
+
+  if($command eq "version") {
+    print "This is Rex::JobControl (" . $Rex::JobControl::VERSION . ")\n";
     exit 0;
   }
 
