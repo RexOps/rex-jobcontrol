@@ -276,7 +276,19 @@ sub formular_new_create {
     "Got formular name: " . $self->param("formular_name") );
 
   my $formular_file = $self->param("formular_file");
-  $formular_file->move_to( getcwd() . "/upload/" . $formular_file->filename );
+
+  eval {
+    $formular_file->move_to( getcwd() . "/upload/" . $formular_file->filename );
+  } or do {
+    $self->flash(
+      {
+        title   => "Error uploading formular definition file.",
+        message => "Failed to upload formular definition file. $@",
+      }
+    );
+
+    return $self->redirect_to( "/project/" . $self->param("project_dir") );
+  };
 
   eval {
 

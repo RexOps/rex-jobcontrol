@@ -63,7 +63,7 @@ sub _config_file {
 
 sub steps {
   my ($self) = @_;
-  return $self->{steps}->{formulars};
+  return $self->{steps}->{formulars} || [];
 }
 
 sub formulars {

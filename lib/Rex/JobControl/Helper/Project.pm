@@ -85,16 +85,17 @@ sub update {
   my ($self) = @_;
 
   my $project_path = $self->project_path;
-  YAML::DumpFile( "$project_path/project.conf.yml", $self->{project_configuration} );
+  YAML::DumpFile( "$project_path/project.conf.yml",
+    $self->{project_configuration} );
 }
 
 sub add_node {
-  my ($self, $host) = @_;
+  my ( $self, $host ) = @_;
 
-  if(! exists $self->{project_configuration}->{nodes}) {
+  if ( !exists $self->{project_configuration}->{nodes} ) {
     $self->{project_configuration}->{nodes} = [];
   }
-  
+
   push @{ $self->{project_configuration}->{nodes} }, $host;
   $self->update;
 }
@@ -192,7 +193,7 @@ sub all_server {
   }
 
   $self->load;
-  for my $srv (@{ $self->{project_configuration}->{nodes} }) {
+  for my $srv ( @{ $self->{project_configuration}->{nodes} } ) {
     push @all_server, $srv;
   }
 
@@ -214,6 +215,10 @@ sub formulars {
   my ($self) = @_;
 
   my @formulars;
+
+  if ( !-d $self->project_path() . "/formulars" ) {
+    return [];
+  }
 
   opendir( my $dh, $self->project_path() . "/formulars" )
     or die( "Error: $! (" . $self->project_path() . ")" );
