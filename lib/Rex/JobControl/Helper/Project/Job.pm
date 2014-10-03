@@ -127,6 +127,10 @@ sub execute {
   my $job_path = File::Spec->catdir( $self->project->project_path,
     "jobs", $self->{directory} );
 
+  if ( scalar @server == 0 ) {
+    @server = ("<local>");
+  }
+
   my $pid          = time;
   my $execute_path = "$job_path/execute/$pid";
   my $cmdb_path    = "$job_path/execute/$pid/cmdb";

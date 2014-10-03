@@ -182,6 +182,10 @@ sub execute {
   my @server = @{ $option{server} };
   my $cmdb   = $option{cmdb};
 
+  if ( scalar @server == 0 ) {
+    @server = ("<local>");
+  }
+
   my $rex_path = File::Spec->catdir( $self->project->project_path,
     "rex", $self->{directory}, $self->rexfile );
 
