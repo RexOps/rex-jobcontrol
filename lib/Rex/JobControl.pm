@@ -216,6 +216,9 @@ sub startup {
   # Load plugins
   #######################################################################
   $self->plugin( "Config", file => $cfg );
+
+  $self->app->log(Mojo::Log->new(path => $self->config->{log}->{access_log}, level => $self->config->{log}->{access_log_level}));
+
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::Project");
 
   $self->plugin( Minion => { File => $self->app->config->{minion_db_file} } );

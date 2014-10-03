@@ -188,7 +188,7 @@ description     "Rex::JobControl Minion upstart job"
 start on runlevel [2345]
 stop on runlevel [!2345]
 
-exec /usr/local/bin/rex_job_control minion worker
+exec $0 minion worker
 ~;
   close($fh);
 
