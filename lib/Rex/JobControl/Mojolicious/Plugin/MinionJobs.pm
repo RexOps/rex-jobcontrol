@@ -51,6 +51,7 @@ sub register {
         my $pr = $job->app->project($project_dir);
         $pr->create_rexfile(
           directory   => $rexfile_name,
+          name        => $rexfile_name,
           url         => $rexfile_url,
           description => $rexfile_description,
         );

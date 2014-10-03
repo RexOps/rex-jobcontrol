@@ -7,7 +7,7 @@
     <div class="panel-heading"><%= $formular_config->{label} %></div>
     <div class="panel-body">
 
-    <form action="/project/<%= $project->name %>/formular/<%= $formular->name %>/execute" method="post" accept-charset="utf-8">
+    <form action="/project/<%= $project->directory %>/formular/<%= $formular->directory %>/execute" method="post" accept-charset="utf-8">
       <input type="hidden" name="posted" value="1" />
       <input type="hidden" name="repeat" value="<%= $repeat %>" />
       <input type="hidden" id="form_changed" name="form_changed" value="0" />
@@ -84,7 +84,7 @@
   <div class="panel-heading">Already configured</div>
   <div class="panel-body">
 
-    <form action="/project/<%= $project->name %>/formular/<%= $formular->name %>/execute/delete_data_item" method="post" accept-charset="utf-8">
+    <form action="/project/<%= $project->directory %>/formular/<%= $formular->directory %>/execute/delete_data_item" method="post" accept-charset="utf-8">
       <input type="hidden" name="posted" value="1" />
       <input type="hidden" name="repeat" value="<%= $repeat %>" />
       <input type="hidden" name="form_step" value="<%= $form_step %>" />

@@ -64,7 +64,7 @@
                 <li class="divider"></li>
                 <li class="dropdown-header">All Jobs in <%= $project->name %></li>
   % for my $job (@{ $project->jobs }) {
-                <li><a href="/project/<%= $project->directory %>/job/<%= $job->name %>"><%= $job->name %></a></li>
+                <li><a href="/project/<%= $project->directory %>/job/<%= $job->directory %>"><%= $job->name %></a></li>
   % }
 % }
               </ul>
@@ -77,7 +77,7 @@
                 <li class="divider"></li>
                 <li class="dropdown-header">All Rexfiles in <%= $project->name %></li>
   % for my $rexfile (@{ $project->rexfiles }) {
-                <li><a href="/project/<%= $project->directory %>/rexfile/<%= $rexfile->name %>"><%= $rexfile->name %></a></li>
+                <li><a href="/project/<%= $project->directory %>/rexfile/<%= $rexfile->directory %>"><%= $rexfile->name %></a></li>
   % }
 % }
               </ul>
@@ -97,9 +97,9 @@
                 <li class="dropdown-header">All Formulars in <%= $project->name %></li>
   % for my $formular (@{ $project->formulars }) {
   % if( $is_logged_in ) {
-                <li><a href="/project/<%= $project->directory %>/formular/<%= $formular->name %>"><%= $formular->name %></a></li>
+                <li><a href="/project/<%= $project->directory %>/formular/<%= $formular->directory %>"><%= $formular->name %></a></li>
   % } elsif($formular->public eq "yes") {
-                <li><a href="/project/<%= $project->directory %>/formular/<%= $formular->name %>"><%= $formular->name %></a></li>
+                <li><a href="/project/<%= $project->directory %>/formular/<%= $formular->directory %>"><%= $formular->name %></a></li>
   % }
   % }
 % }

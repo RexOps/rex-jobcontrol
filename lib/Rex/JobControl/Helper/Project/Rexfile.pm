@@ -83,10 +83,15 @@ sub create {
   chwd "$rex_path/$rexfile", sub {
     my $rex_cmd = $self->project->app->config->{rex};
     my $out     = `$rex_cmd -Ty 2>&1`;
-    $rex_info = YAML::Load($out);
+    eval {
+      $rex_info = YAML::Load($out);
+    } or do {
+      $self->project->app->log->error("Error reading Rexfile information.");
+      $self->project->app->log->error("$out");
+      $self->project->app->log->error("Please try to run rex -Ty on the Rexfile to see the error.");
+    };
   };
 
-  $data{name} = $data{directory};
   delete $data{directory};
 
   my $rex_configuration = {
@@ -180,6 +185,8 @@ sub execute {
 
   my $rex_path = File::Spec->catdir( $self->project->project_path,
     "rex", $self->{directory}, $self->rexfile );
+
+  $self->project->app->log->debug("rex_path: $rex_path");
 
   my @ret;
 

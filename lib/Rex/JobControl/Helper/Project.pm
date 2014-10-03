@@ -12,6 +12,8 @@ use Data::Dumper;
 use File::Spec;
 use File::Path;
 use YAML;
+use Digest::MD5 'md5_hex';
+
 use Rex::JobControl::Helper::Project::Job;
 use Rex::JobControl::Helper::Project::Rexfile;
 use Rex::JobControl::Helper::Project::Formular;
@@ -43,9 +45,10 @@ sub load {
 
   if ( -f $self->_config_file() ) {
     $self->{project_configuration} = YAML::LoadFile( $self->_config_file );
+    $self->{name} = $self->{project_configuration}->{name};
   }
 
-  $self->{directory} = $self->{name};
+  #$self->{directory} = $self->{name};
 }
 
 sub _config_file {
@@ -57,7 +60,7 @@ sub project_path {
   my ($self) = @_;
 
   my $path = File::Spec->rel2abs( $self->app->config->{project_path} );
-  my $project_path = File::Spec->catdir( $path, $self->{name} );
+  my $project_path = File::Spec->catdir( $path, $self->{directory} );
 
   return $project_path;
 }
@@ -66,7 +69,7 @@ sub create {
   my ($self) = @_;
 
   my $path = File::Spec->rel2abs( $self->app->config->{project_path} );
-  my $project_path = File::Spec->catdir( $path, $self->{name} );
+  my $project_path = File::Spec->catdir( $path, md5_hex( $self->{name} ) );
 
   $self->app->log->debug(
     "Creating new project $self->{name} in $project_path.");
@@ -137,6 +140,8 @@ sub get_job {
 sub create_job {
   my ( $self, %data ) = @_;
 
+  $data{directory} = md5_hex( $data{directory} );
+
   my $job =
     Rex::JobControl::Helper::Project::Job->new( project => $self, %data );
   $job->create(%data);
@@ -169,6 +174,8 @@ sub rexfiles {
 
 sub create_rexfile {
   my ( $self, %data ) = @_;
+
+  $data{directory} = md5_hex( $data{directory} );
 
   my $rexfile =
     Rex::JobControl::Helper::Project::Rexfile->new( project => $self, %data );
@@ -246,6 +253,8 @@ sub get_formular {
 
 sub create_formular {
   my ( $self, %data ) = @_;
+
+  $data{directory} = md5_hex( $data{directory} );
 
   my $form =
     Rex::JobControl::Helper::Project::Formular->new( project => $self, %data );

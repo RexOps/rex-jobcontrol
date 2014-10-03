@@ -13,6 +13,7 @@ use File::Spec;
 use File::Path;
 use YAML;
 use Rex::JobControl::Helper::Chdir;
+use Digest::MD5 'md5_hex';
 use Data::Dumper;
 
 sub new {
@@ -32,9 +33,23 @@ sub description      { (shift)->{job_configuration}->{description} }
 sub environment      { (shift)->{job_configuration}->{environment} }
 sub project          { (shift)->{project} }
 sub directory        { (shift)->{directory} }
-sub steps            { (shift)->{job_configuration}->{steps} }
 sub fail_strategy    { (shift)->{job_configuration}->{fail_strategy} }
 sub execute_strategy { (shift)->{job_configuration}->{execute_strategy} }
+
+sub steps {
+  my ($self) = @_;
+  my $steps = $self->{job_configuration}->{steps};
+
+  my @steps_a;
+
+  for my $s ( @{$steps} ) {
+    my ( $rexfile_dir, $task ) = split( /\//, $s );
+    my $rexfile = $self->project->get_rexfile($rexfile_dir);
+    push @steps_a, $rexfile->name . "/$task";
+  }
+
+  return \@steps_a;
+}
 
 sub load {
   my ($self) = @_;
@@ -51,7 +66,7 @@ sub _config_file {
 }
 
 sub get_output_log {
-  my ($self, $job_id) = @_;
+  my ( $self, $job_id ) = @_;
 
   my $job_path = File::Spec->catdir( $self->project->project_path,
     "jobs", $self->{directory} );
@@ -59,12 +74,13 @@ sub get_output_log {
 
   my $logfile = "$execute_path/output.log";
 
-  if(! -f $logfile) {
-    $self->project->app->log->error("This job doesn't have an output.log file.");
+  if ( !-f $logfile ) {
+    $self->project->app->log->error(
+      "This job doesn't have an output.log file.");
     return "No output.log found.";
   }
- 
-  my @loglines = eval { local (@ARGV, $/) = ($logfile); <>; };
+
+  my @loglines = eval { local ( @ARGV, $/ ) = ($logfile); <>; };
 
   return \@loglines;
 }
@@ -149,6 +165,7 @@ sub execute {
     SERVER: for my $srv (@server) {
 
         my ( $rexfile_name, $task ) = split( /\//, $s );
+        $rexfile_name = md5_hex($rexfile_name);
         my $rexfile = $self->project->get_rexfile($rexfile_name);
 
         my $ret = $rexfile->execute(
@@ -177,13 +194,18 @@ sub execute {
 
     STEP: for my $s ( @{ $self->steps } ) {
 
-        if(-f $self->project->project_path . "/next_server.txt") {
-          $srv = eval { local(@ARGV, $/) = ($self->project->project_path . "/next_server.txt"); <>; };
+        if ( -f $self->project->project_path . "/next_server.txt" ) {
+          $srv = eval {
+            local ( @ARGV, $/ ) =
+              ( $self->project->project_path . "/next_server.txt" );
+            <>;
+          };
           chomp $srv;
           unlink $self->project->project_path . "/next_server.txt";
         }
 
         my ( $rexfile_name, $task ) = split( /\//, $s );
+        $rexfile_name = md5_hex($rexfile_name);
         my $rexfile = $self->project->get_rexfile($rexfile_name);
 
         my $ret = $rexfile->execute(
@@ -279,17 +301,18 @@ sub get_logs {
     my @entries;
     opendir( my $dh, $execute_path ) or die($!);
     while ( my $entry = readdir($dh) ) {
-      next if($entry eq "." || $entry eq "..");
+      next if ( $entry eq "." || $entry eq ".." );
       if ( -f "$execute_path/$entry/running.status.yml" ) {
-        my $run_status = YAML::LoadFile("$execute_path/$entry/running.status.yml");
-        $run_status->{id} = $entry;
+        my $run_status =
+          YAML::LoadFile("$execute_path/$entry/running.status.yml");
+        $run_status->{id}       = $entry;
         $run_status->{finished} = 0;
         push @entries, $run_status;
       }
 
-      if( -f "$execute_path/$entry/run.status.yml" ) {
+      if ( -f "$execute_path/$entry/run.status.yml" ) {
         my $run_status = YAML::LoadFile("$execute_path/$entry/run.status.yml");
-        $run_status->{id} = $entry;
+        $run_status->{id}       = $entry;
         $run_status->{finished} = 1;
         push @entries, $run_status;
       }
@@ -308,8 +331,5 @@ sub get_logs {
 
   }
 }
-
-
-
 
 1;
