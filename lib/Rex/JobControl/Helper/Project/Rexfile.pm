@@ -156,7 +156,7 @@ sub reload {
   };
 
   my $rex_configuration = {
-    name    => $self->{directory},
+    name    => $self->name,
     url     => $url,
     rexfile => $rexfile,
     rex     => $rex_info,
