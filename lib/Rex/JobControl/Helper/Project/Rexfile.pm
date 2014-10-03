@@ -83,12 +83,11 @@ sub create {
   chwd "$rex_path/$rexfile", sub {
     my $rex_cmd = $self->project->app->config->{rex};
     my $out     = `$rex_cmd -Ty 2>&1`;
-    eval {
-      $rex_info = YAML::Load($out);
-    } or do {
+    eval { $rex_info = YAML::Load($out); } or do {
       $self->project->app->log->error("Error reading Rexfile information.");
       $self->project->app->log->error("$out");
-      $self->project->app->log->error("Please try to run rex -Ty on the Rexfile to see the error.");
+      $self->project->app->log->error(
+        "Please try to run rex -Ty on the Rexfile to see the error.");
     };
   };
 
@@ -105,12 +104,12 @@ sub create {
 
 sub tasks {
   my ($self) = @_;
-  return $self->{rex_configuration}->{rex}->{tasks};
+  return ( $self->{rex_configuration}->{rex}->{tasks} || [] );
 }
 
 sub environments {
   my ($self) = @_;
-  return $self->{rex_configuration}->{rex}->{envs};
+  return ( $self->{rex_configuration}->{rex}->{envs} || [] );
 }
 
 sub all_server {
@@ -120,7 +119,7 @@ sub all_server {
 
   for my $group ( keys %{ $self->groups } ) {
     push @all_server,
-      ( map { $_ = { name => $_->{name}, group => $group, %{ $_ } } }
+      ( map { $_ = { name => $_->{name}, group => $group, %{$_} } }
         @{ $self->groups->{$group} } );
   }
 
@@ -194,34 +193,34 @@ sub execute {
 
   for my $srv (@server) {
 
-    my ($srv_object) = grep { $_->{name} eq $srv } @{ $all_server };
+    my ($srv_object) = grep { $_->{name} eq $srv } @{$all_server};
 
-    if(exists $srv_object->{auth}) {
-      if(exists $srv_object->{auth}->{auth_type}) {
+    if ( exists $srv_object->{auth} ) {
+      if ( exists $srv_object->{auth}->{auth_type} ) {
         $ENV{REX_AUTH_TYPE} = $srv_object->{auth}->{auth_type};
       }
 
-      if(exists $srv_object->{auth}->{public_key}) {
+      if ( exists $srv_object->{auth}->{public_key} ) {
         $ENV{REX_PUBLIC_KEY} = $srv_object->{auth}->{public_key};
       }
 
-      if(exists $srv_object->{auth}->{private_key}) {
+      if ( exists $srv_object->{auth}->{private_key} ) {
         $ENV{REX_PRIVATE_KEY} = $srv_object->{auth}->{private_key};
       }
 
-      if(exists $srv_object->{auth}->{user}) {
+      if ( exists $srv_object->{auth}->{user} ) {
         $ENV{REX_USER} = $srv_object->{auth}->{user};
       }
 
-      if(exists $srv_object->{auth}->{password}) {
+      if ( exists $srv_object->{auth}->{password} ) {
         $ENV{REX_PASSWORD} = $srv_object->{auth}->{password};
       }
 
-      if(exists $srv_object->{auth}->{sudo_password}) {
+      if ( exists $srv_object->{auth}->{sudo_password} ) {
         $ENV{REX_SUDO_PASSWORD} = $srv_object->{auth}->{sudo_password};
       }
 
-      if(exists $srv_object->{auth}->{sudo}) {
+      if ( exists $srv_object->{auth}->{sudo} ) {
         $ENV{REX_SUDO} = $srv_object->{auth}->{sudo};
       }
 
@@ -233,19 +232,21 @@ sub execute {
     chwd $rex_path, sub {
       my ( $chld_out, $chld_in, $pid );
 
-      $self->project->app->log->debug("Writing output to: $ENV{JOBCONTROL_EXECUTION_PATH}/output.log");
+      $self->project->app->log->debug(
+        "Writing output to: $ENV{JOBCONTROL_EXECUTION_PATH}/output.log");
 
-      my $out_fh = IO::File->new("$ENV{JOBCONTROL_EXECUTION_PATH}/output.log", "a+");
-      my $err_fh = IO::File->new("$ENV{JOBCONTROL_EXECUTION_PATH}/output.log", "a+");
+      my $out_fh =
+        IO::File->new( "$ENV{JOBCONTROL_EXECUTION_PATH}/output.log", "a+" );
+      my $err_fh =
+        IO::File->new( "$ENV{JOBCONTROL_EXECUTION_PATH}/output.log", "a+" );
       capture {
-        system(
-          $self->project->app->config->{rex},
+        system( $self->project->app->config->{rex},
           '-H', $srv, '-t', 1, '-F', '-m',
-          ( $cmdb ? ( '-O', "cmdb_path=$cmdb/jobcontrol.yml" ) : () ), $task 
-        );
+          ( $cmdb ? ( '-O', "cmdb_path=$cmdb/jobcontrol.yml" ) : () ), $task );
 
         $child_exit_status = $?;
-      } stdout => $out_fh, stderr => $err_fh;
+      }
+      stdout => $out_fh, stderr => $err_fh;
 
     };
 
