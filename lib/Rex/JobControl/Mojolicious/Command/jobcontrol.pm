@@ -85,6 +85,13 @@ sub run {
       $changed = 1;
     }
 
+    if ( !-d $self->app->config->{upload_tmp_path} ) {
+      $self->app->log->info(
+        "Creating upload_tmp_path: " . $self->app->config->{upload_tmp_path} );
+      File::Path::make_path( $self->app->config->{upload_tmp_path} );
+      $changed = 1;
+    }
+
     if ( !-d dirname( $self->app->config->{auth}->{passwd} ) ) {
       $self->app->log->info( "Creating passwd path: "
           . dirname( $self->app->config->{auth}->{passwd} ) );

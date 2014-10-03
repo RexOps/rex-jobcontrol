@@ -11,6 +11,7 @@ use DateTime;
 use Data::Dumper;
 use Cwd;
 use YAML;
+use File::Spec;
 
 sub check_public {
   my ($self) = @_;
@@ -278,7 +279,12 @@ sub formular_new_create {
   my $formular_file = $self->param("formular_file");
 
   eval {
-    $formular_file->move_to( getcwd() . "/upload/" . $formular_file->filename );
+    $formular_file->move_to(
+      File::Spec->catdir(
+        $self->config->{upload_tmp_path},
+        $formular_file->filename
+      )
+    );
   } or do {
     $self->flash(
       {
@@ -341,8 +347,12 @@ sub edit_save {
 
   my $formular_file = $self->param("formular_file");
 
-  $formular_file->move_to( getcwd() . "/upload/" . $formular_file->filename )
-    if $formular_file->filename;
+  $formular_file->move_to(
+    File::Spec->catdir(
+      $self->config->{upload_tmp_path},
+      $formular_file->filename
+    )
+  ) if $formular_file->filename;
 
   eval {
 

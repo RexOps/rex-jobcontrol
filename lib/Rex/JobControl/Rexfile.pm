@@ -8,6 +8,7 @@ package Rex::JobControl::Rexfile;
 
 use Mojo::Base 'Mojolicious::Controller';
 use Cwd;
+use File::Spec;
 
 sub prepare_stash {
   my $self = shift;
@@ -62,7 +63,11 @@ sub rexfile_new_create {
       }
 
       $rexfile_archive->move_to(
-        getcwd() . "/upload/" . $rexfile_archive->filename );
+        File::Spec->catdir(
+          $self->config->{upload_tmp_path},
+          $rexfile_archive->filename
+        )
+      );
 
       $self->minion->enqueue(
         checkout_rexfile => [
