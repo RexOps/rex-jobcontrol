@@ -237,6 +237,28 @@ sub execute {
       status     => \@status,
     }
   );
+
+  YAML::DumpFile(
+    "$job_path/last.run.status.yml",
+    {
+      start_time => $pid,
+      end_time   => time,
+      user       => $user,
+      status     => \@status,
+    }
+  );
+
+  YAML::DumpFile(
+    $self->project->project_path . "/last.run.status.yml",
+    {
+      start_time => $pid,
+      end_time   => time,
+      user       => $user,
+      status     => \@status,
+    }
+  );
+
+
 }
 
 sub last_status {

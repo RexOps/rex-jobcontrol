@@ -31,7 +31,12 @@
         Last executed job
       </div>
       <div class="col-xs-10">
-        prepare
+        % my $last_job = $pro->get_last_job_execution;
+        % my $rexfile_name = $last_job->{status}->[-1]->{rexfile};
+        % my $task_name = $last_job->{status}->[-1]->{task};
+        % my $server_name = $last_job->{status}->[-1]->{server};
+        % my $status = $last_job->{status}->[-1]->{status};
+        <%= $rexfile_name %>/<%= $task_name %> on <%= $server_name %> with status <%= $status %>
       </div>
     </div>
 
