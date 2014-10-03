@@ -73,7 +73,10 @@ sub rexfile_new_create {
         checkout_rexfile => [
           $pr->directory,
           $self->param("rexfile_name"),
-          getcwd() . "/upload/" . $rexfile_archive->filename,
+          File::Spec->catdir(
+            $self->config->{upload_tmp_path},
+            $rexfile_archive->filename
+          ),
           $self->param("rexfile_description")
         ]
       );

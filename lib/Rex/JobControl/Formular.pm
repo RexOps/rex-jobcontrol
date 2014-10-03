@@ -298,8 +298,12 @@ sub formular_new_create {
 
   eval {
 
-    my $ref =
-      YAML::LoadFile( getcwd() . "/upload/" . $formular_file->filename );
+    my $ref = YAML::LoadFile(
+      File::Spec->catdir(
+        $self->config->{upload_tmp_path},
+        $formular_file->filename
+      )
+    );
     my $pr = $self->project( $self->param("project_dir") );
 
     $pr->create_formular(
@@ -359,7 +363,12 @@ sub edit_save {
     my $ref;
 
     if ( $formular_file->filename ) {
-      $ref = YAML::LoadFile( getcwd() . "/upload/" . $formular_file->filename );
+      $ref = YAML::LoadFile(
+        File::Spec->catdir(
+          $self->config->{upload_tmp_path},
+          $formular_file->filename
+        )
+      );
     }
 
     $formular->update(
