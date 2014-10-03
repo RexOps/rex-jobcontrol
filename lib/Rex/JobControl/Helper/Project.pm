@@ -67,8 +67,13 @@ sub project_path {
 
 sub get_last_job_execution {
   my ($self) = @_;
-  my $ref = YAML::LoadFile(File::Spec->catfile($self->project_path, "last.run.status.yml"));
-  return $ref;
+
+  my $last_run_status_file = File::Spec->catfile($self->project_path, "last.run.status.yml");
+  if(-f $last_run_status_file) {
+    return YAML::LoadFile($last_run_status_file);
+  }
+
+  return;
 }
 
 sub create {
