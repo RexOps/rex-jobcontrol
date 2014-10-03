@@ -217,7 +217,14 @@ sub startup {
   #######################################################################
   $self->plugin( "Config", file => $cfg );
 
-  $self->app->log(Mojo::Log->new(path => $self->config->{log}->{access_log}, level => $self->config->{log}->{access_log_level}));
+  if ( -d dirname( $self->config->{log}->{access_log} ) ) {
+    $self->app->log(
+      Mojo::Log->new(
+        path  => $self->config->{log}->{access_log},
+        level => $self->config->{log}->{access_log_level}
+      )
+    );
+  }
 
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::Project");
 
@@ -253,7 +260,6 @@ sub startup {
 
   $r->get('/login')->to('dashboard#login');
   $r->post('/login')->to('dashboard#login_post');
-
 
   my $r_formular_execute =
     $r->bridge('/project/:project_dir/formular/:formular_dir/execute')
