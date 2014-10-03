@@ -245,7 +245,7 @@ sub execute {
         IO::File->new( "$ENV{JOBCONTROL_EXECUTION_PATH}/output.log", "a+" );
       capture {
         system( $self->project->app->config->{rex},
-          '-H', $srv, '-t', 1, '-F', '-m',
+          '-H', $srv, '-t', 1, '-F', '-c', '-m',
           ( $cmdb ? ( '-O', "cmdb_path=$cmdb/jobcontrol.yml" ) : () ), $task );
 
         $child_exit_status = $?;
