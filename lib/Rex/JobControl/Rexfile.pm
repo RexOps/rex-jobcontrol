@@ -51,7 +51,7 @@ sub rexfile_new_create {
         {
           title => "File too large.",
           message =>
-            "You have reached the upload file limit. You can set this limit higher in the configuration file.",
+            "You have reached the upload size limit. You can set this limit higher in the configuration file.",
         }
       );
       return $self->redirect_to( "/project/" . $self->param("project_dir") );
@@ -83,9 +83,9 @@ sub rexfile_new_create {
 
       $self->flash(
         {
-          title => "Rexfile will be extracted in background.",
+          title => "Rexfile will be extracted in the background.",
           message =>
-            "Rexfile will be extracted in background. Once it it finished it will appear in the list."
+            "Rexfile will be extracted in the background. Once finished, it will appear in the list."
         }
       );
     }
@@ -110,9 +110,9 @@ sub rexfile_new_create {
 
     $self->flash(
       {
-        title => "Rexfile will be downloaded in background.",
+        title => "Rexfile will be downloaded in the background.",
         message =>
-          "Rexfile will be downloaded in background. Once it it finished it will appear in the list."
+          "Rexfile will be downloaded in the background. Once finished, it will appear in the list."
       }
     );
 
