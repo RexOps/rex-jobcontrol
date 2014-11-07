@@ -24,6 +24,19 @@ sub new {
 
   bless( $self, $proto );
 
+  if ( $self->{rexfile_id} ) {
+    $self->{directory} = $self->{rexfile_id};
+    delete $self->{rexfile_id};
+  }
+
+  if ( $self->{project_id} ) {
+    $self->{project} = Rex::JobControl::Helper::Project->new(
+      app        => $self->{app},
+      project_id => $self->{project_id}
+    );
+    delete $self->{project_id};
+  }
+
   $self->load;
 
   return $self;
@@ -35,6 +48,15 @@ sub load {
   if ( -f $self->_config_file() ) {
     $self->{rex_configuration} = YAML::LoadFile( $self->_config_file );
   }
+}
+
+sub data {
+  my ($self) = @_;
+  $self->load;
+  return {
+    id => $self->{directory},
+    %{ $self->{rex_configuration} },
+  };
 }
 
 sub project     { (shift)->{project} }
@@ -117,7 +139,7 @@ sub all_server {
 
   my @all_server;
 
-  for my $group ( keys %{ $self->groups } ) {
+  for my $group ( keys %{ $self->groups || {} } ) {
     push @all_server,
       ( map { $_ = { name => $_->{name}, group => $group, %{$_} } }
         @{ $self->groups->{$group} } );

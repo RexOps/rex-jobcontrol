@@ -98,7 +98,15 @@
 
 
 
-            <li class="active"><a href="/project/<%= $project->directory %>/nodes">Nodes</a></li>
+            <li class="dropdown active">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Nodes <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="/project/<%= $project->directory %>/node_group/new">New Group</a></li>
+                <li class="disabled"><a href="#">Delete Group</a></li>
+              </ul>
+            </li>
+
+
             <li><a href="/project/<%= $project->directory %>/audit">Audit</a></li>
  
           </ul>

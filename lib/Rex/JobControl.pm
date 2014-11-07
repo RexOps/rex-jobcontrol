@@ -227,6 +227,17 @@ sub startup {
   }
 
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::Project");
+  $self->plugin(
+    "Rex::JobControl::Mojolicious::Plugin::RestRoutes",
+    prefix      => "/api/v1",
+    base_module => "api",
+    bridge      => 'dashboard#prepare_stash',
+    objects     => [
+      'Project',           'Project::Job',
+      'Project::Formular', 'Project::Rexfile',
+      'Project::Node',     'Project::NodeGroup'
+    ],
+  );
 
   $self->plugin( Minion => { File => $self->app->config->{minion_db_file} } );
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::MinionJobs");
