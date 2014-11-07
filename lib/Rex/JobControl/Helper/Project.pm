@@ -25,6 +25,11 @@ sub new {
 
   bless( $self, $proto );
 
+  if ( $self->{project_id} ) {
+    $self->{directory} = $self->{project_id};
+    delete $self->{project_id};
+  }
+
   $self->load;
 
   return $self;
@@ -33,6 +38,15 @@ sub new {
 sub app       { (shift)->{app}; }
 sub name      { (shift)->{project_configuration}->{name}; }
 sub directory { (shift)->{directory}; }
+
+sub data {
+  my ($self) = @_;
+  $self->load;
+  return {
+    id => $self->{directory},
+    %{ $self->{project_configuration} },
+  };
+}
 
 sub dump {
   my ($self) = @_;
@@ -45,7 +59,7 @@ sub load {
 
   if ( -f $self->_config_file() ) {
     $self->{project_configuration} = YAML::LoadFile( $self->_config_file );
-    $self->{name} = $self->{project_configuration}->{name};
+    $self->{name}                  = $self->{project_configuration}->{name};
   }
 
   #$self->{directory} = $self->{name};
@@ -68,8 +82,9 @@ sub project_path {
 sub get_last_job_execution {
   my ($self) = @_;
 
-  my $last_run_status_file = File::Spec->catfile($self->project_path, "last.run.status.yml");
-  if(-f $last_run_status_file) {
+  my $last_run_status_file =
+    File::Spec->catfile( $self->project_path, "last.run.status.yml" );
+  if ( -f $last_run_status_file ) {
     return YAML::LoadFile($last_run_status_file);
   }
 
@@ -120,6 +135,12 @@ sub job_count {
   return scalar( @{$jobs} );
 }
 
+sub list_jobs { 
+  my ($self) = @_;
+  my @jobs = map { $_->data } @{ $self->jobs };
+  return \@jobs;
+}
+
 sub jobs {
   my ($self) = @_;
 
@@ -162,6 +183,12 @@ sub rexfile_count {
   my ($self) = @_;
   my $rexfiles = $self->rexfiles;
   return scalar( @{$rexfiles} );
+}
+
+sub list_rexfiles { 
+  my ($self) = @_;
+  my @rexfiles = map { $_->data } @{ $self->rexfiles };
+  return \@rexfiles;
 }
 
 sub rexfiles {
@@ -227,6 +254,12 @@ sub formular_count {
   my ($self) = @_;
   my $forms = $self->formulars;
   return scalar( @{$forms} );
+}
+
+sub list_formulars { 
+  my ($self) = @_;
+  my @formulars = map { $_->data } @{ $self->formulars };
+  return \@formulars;
 }
 
 sub formulars {

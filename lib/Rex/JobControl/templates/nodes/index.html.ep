@@ -4,41 +4,69 @@
 
 <p>This table list all nodes known to the current project. These nodes are generated out of the groups in your <i>Rexfiles</i>.</p>
 
-<div class="panel panel-default">
+<div class="container-fluid">
+      <div class="row">
 
-  <div class="panel-heading">Nodes</div>
-  <div class="panel-body">
-
-    <table id="server" class="display" cellspacing="0" width="100%">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Group</th>
-        </tr>
-      </thead>
-      <tfoot>
-        <tr>
-          <th>Name</th>
-          <th>Group</th>
-        </tr>
-      </tfoot>
-      <tbody>
-  % for my $srv (@{ $project->all_server }) {
-        <tr>
-          <td><%= $srv->{name} %></td>
-          <td><%= $srv->{group} %></td>
-        </tr>
-  % }
-      </tbody>
-    </table>
-
+<div class="col-sm-3 col-md-2 sidebar">
+  <div id="server_tree" class="nav nav-sidebar">
+    <ul>
+      <li id="node1" group_name="frontend" class="isFolder">Frontend</li>
+      <li id="node2" group_name="backend" class="isFolder">Backend</li>
+    </ul>
   </div>
 </div>
 
+<div class="col-sm-8 col-sm-offset-2 col-md-9 col-md-offset-1 main">
 
+  <div class="panel panel-default">
+
+    <div class="panel-heading">Nodes</div>
+    <div class="panel-body">
+
+      <table id="server" class="display" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Group</th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr>
+            <th>Name</th>
+            <th>Group</th>
+          </tr>
+        </tfoot>
+        <tbody>
+    % for my $srv (@{ $project->all_server }) {
+          <tr>
+            <td><%= $srv->{name} %></td>
+            <td><%= $srv->{group} %></td>
+          </tr>
+    % }
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+</div>
+</div>
+</div>
+
+<link href="/3rdparty/easytree/skin-lion/ui.easytree.css" rel="stylesheet">
+<script src="/3rdparty/easytree/jquery.easytree.min.js"></script>
 <script>
+var tree;
+
 $(document).ready(function() {
   $('#server').dataTable();
+
+  tree = $('#server_tree').easytree();
+
+  $("#server_tree > ul > li > span").on("click", function(event) {
+    console.log($(this).attr("id"));
+  });
+
 } );
 </script>
 
