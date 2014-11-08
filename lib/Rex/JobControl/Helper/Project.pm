@@ -13,10 +13,12 @@ use File::Spec;
 use File::Path;
 use YAML;
 use Digest::MD5 'md5_hex';
+use IO::All;
 
 use Rex::JobControl::Helper::Project::Job;
 use Rex::JobControl::Helper::Project::Rexfile;
 use Rex::JobControl::Helper::Project::Formular;
+use Rex::JobControl::Helper::Project::Nodegroup;
 
 sub new {
   my $that  = shift;
@@ -71,10 +73,10 @@ sub _config_file {
 }
 
 sub project_path {
-  my ($self) = @_;
+  my ( $self, @dirs ) = @_;
 
   my $path = File::Spec->rel2abs( $self->app->config->{project_path} );
-  my $project_path = File::Spec->catdir( $path, $self->{directory} );
+  my $project_path = File::Spec->catdir( $path, $self->{directory}, @dirs );
 
   return $project_path;
 }
@@ -92,7 +94,7 @@ sub get_last_job_execution {
 }
 
 sub create {
-  my ($self) = @_;
+  my ( $self, %data ) = @_;
 
   my $path = File::Spec->rel2abs( $self->app->config->{project_path} );
   my $project_path = File::Spec->catdir( $path, md5_hex( $self->{name} ) );
@@ -135,7 +137,7 @@ sub job_count {
   return scalar( @{$jobs} );
 }
 
-sub list_jobs { 
+sub list_jobs {
   my ($self) = @_;
   my @jobs = map { $_->data } @{ $self->jobs };
   return \@jobs;
@@ -185,7 +187,7 @@ sub rexfile_count {
   return scalar( @{$rexfiles} );
 }
 
-sub list_rexfiles { 
+sub list_rexfiles {
   my ($self) = @_;
   my @rexfiles = map { $_->data } @{ $self->rexfiles };
   return \@rexfiles;
@@ -250,13 +252,61 @@ sub remove {
   File::Path::remove_tree( $self->project_path() );
 }
 
+sub list_nodegroups {
+  my ($self) = @_;
+
+  my @ret = map { $_->data } @{ $self->nodegroups };
+
+  my %lookup_map;
+
+  for my $l (@ret) {
+    $lookup_map{ $l->{id} } = $l;
+  }
+
+  for my $c (@ret) {
+    if ( $c->{parent_id} && $lookup_map{ $c->{parent_id} } ) {
+      if (!exists $lookup_map{ $c->{parent_id} }->{children}
+        || ref( $lookup_map{ $c->{parent_id} }->{children} ) ne "ARRAY" )
+      {
+        $lookup_map{ $c->{parent_id} }->{children} = [];
+      }
+
+      push @{ $lookup_map{ $c->{parent_id} }->{children} }, $c;
+    }
+  }
+
+  return [ @ret[0] ];
+}
+
+sub nodegroups {
+  my ($self) = @_;
+
+  if ( !-d $self->project_path("nodes") ) {
+    return [];
+  }
+
+  my @groups = map {
+    my $dir      = $_->name;
+    my $pro_path = $self->project_path("nodes");
+    $dir =~ s/^\Q$pro_path\E.//;
+
+    $_ = Rex::JobControl::Helper::Project::Nodegroup->new(
+      directory => $dir,
+      project   => $self
+    );
+    } grep { -d $_->name && -f File::Spec->catfile( $_->name, "group.conf.yml" ) }
+    io( $self->project_path("nodes") )->All;
+
+  return \@groups;
+}
+
 sub formular_count {
   my ($self) = @_;
   my $forms = $self->formulars;
   return scalar( @{$forms} );
 }
 
-sub list_formulars { 
+sub list_formulars {
   my ($self) = @_;
   my @formulars = map { $_->data } @{ $self->formulars };
   return \@formulars;

@@ -235,7 +235,7 @@ sub startup {
     objects     => [
       'Project',           'Project::Job',
       'Project::Formular', 'Project::Rexfile',
-      'Project::Node',     'Project::NodeGroup'
+      'Project::Node',     'Project::Nodegroup'
     ],
   );
 
