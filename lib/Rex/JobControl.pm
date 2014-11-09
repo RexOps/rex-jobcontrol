@@ -296,6 +296,7 @@ sub startup {
 
   $project_r->get('/nodes')->to('nodes#index');
   $project_r->get('/audit')->to('audit#index');
+  $project_r->get('/datatables/nodegroup/:nodegroup_id')->to('nodes#get_nodes_from_group');
 
   $project_r->get('/')->to('project#view');
   $project_r->get('/job/new')->to('job#job_new');

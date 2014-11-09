@@ -9,10 +9,6 @@
 
 <div class="col-sm-3 col-md-2 sidebar">
   <div id="server_tree" class="nav nav-sidebar">
-    <ul>
-      <li id="node1" group_name="frontend" class="isFolder">Frontend</li>
-      <li id="node2" group_name="backend" class="isFolder">Backend</li>
-    </ul>
   </div>
 </div>
 
@@ -27,22 +23,14 @@
         <thead>
           <tr>
             <th>Name</th>
-            <th>Group</th>
           </tr>
         </thead>
         <tfoot>
           <tr>
             <th>Name</th>
-            <th>Group</th>
           </tr>
         </tfoot>
         <tbody>
-    % for my $srv (@{ $project->all_server }) {
-          <tr>
-            <td><%= $srv->{name} %></td>
-            <td><%= $srv->{group} %></td>
-          </tr>
-    % }
         </tbody>
       </table>
 
@@ -57,15 +45,29 @@
 <script src="/3rdparty/easytree/jquery.easytree.min.js"></script>
 <script>
 var tree;
+var table;
 
 $(document).ready(function() {
-  $('#server').dataTable();
+  table = $('#server').dataTable({
+      "ajax": "/project/<%= $project->id %>/datatables/nodegroup/<%= $firstgroup->id %>"
+    });
 
-  tree = $('#server_tree').easytree();
-
-  $("#server_tree > ul > li > span").on("click", function(event) {
-    console.log($(this).attr("id"));
-  });
+  $('#server_tree').jstree({
+    'core': {
+      'data': {
+        'url': '/api/v1/project/<%= $project->directory %>/nodegroup',
+        'data': function (node) {
+          console.log(node);
+          return { 'id': node.id };
+        },
+        'check_callback': true
+      }
+    },
+    'plugins': ['wholerow', 'state', 'dnd']
+    }).on("select_node.jstree", function(node, sel, event) {
+      console.log(sel.node.id);
+      table.api().ajax.url("/project/<%= $project->id %>/datatables/nodegroup/" + sel.node.id ).load();
+    });
 
 } );
 </script>
