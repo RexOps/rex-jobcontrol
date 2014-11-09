@@ -11,6 +11,7 @@ package Rex::JobControl::Helper::Project::Nodegroup;
 
 use File::Spec;
 use Mojo::JSON;
+use IO::All;
 
 sub new {
   my $that  = shift;
@@ -20,7 +21,7 @@ sub new {
   bless( $self, $proto );
 
   if ( $self->{nodegroup_id} ) {
-    my @parts = split(/_/, $self->{nodegroup_id});
+    my @parts = split( /_/, $self->{nodegroup_id} );
     $self->{directory} = File::Spec->catdir(@parts);
     delete $self->{nodegroup_id};
   }
@@ -51,15 +52,36 @@ sub data {
     parent_id => join( "_", @dir_struct[ 0 .. $#dir_struct - 1 ] ),
     text      => $self->name,
     children  => $self->has_children,
+    nodes     => $self->get_nodes,
     %{ $self->{nodegroup_configuration} },
   };
 }
 
+sub get_nodes {
+  my ($self) = @_;
+
+  my @ret;
+  my $group_dir = $self->project->project_path( "nodes", $self->directory );
+
+  opendir( my $dh, $group_dir ) or die($!);
+  while ( my $entry = readdir($dh) ) {
+    next if ( $entry =~ m/^\./ );
+    if ( -f File::Spec->catfile( $group_dir, $entry, "node.conf.yml" ) ) {
+      push @ret,
+        YAML::LoadFile(
+        File::Spec->catfile( $group_dir, $entry, "node.conf.yml" ) );
+    }
+  }
+  close($dh);
+
+  return \@ret;
+}
+
 sub id {
   my ($self) = @_;
-  my $id = $self->{directory};
-  my @dirs = File::Spec->splitdir($self->{directory});
-  return join("_", @dirs);
+  my $id     = $self->{directory};
+  my @dirs   = File::Spec->splitdir( $self->{directory} );
+  return join( "_", @dirs );
 }
 
 sub project     { (shift)->{project} }

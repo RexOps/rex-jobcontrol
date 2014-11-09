@@ -40,6 +40,7 @@ sub new {
 sub app       { (shift)->{app}; }
 sub name      { (shift)->{project_configuration}->{name}; }
 sub directory { (shift)->{directory}; }
+sub id        { (shift)->{directory}; }
 
 sub data {
   my ($self) = @_;
@@ -171,6 +172,14 @@ sub get_job {
   );
 }
 
+sub get_nodegroup {
+  my ( $self, $id ) = @_;
+  return Rex::JobControl::Helper::Project::Nodegroup->new(
+    nodegroup_id => $id,
+    project      => $self
+  );
+}
+
 sub create_job {
   my ( $self, %data ) = @_;
 
@@ -275,7 +284,7 @@ sub list_nodegroups {
     }
   }
 
-  return [ @ret[0] ];
+  return [ $ret[0] ];
 }
 
 sub nodegroups {
