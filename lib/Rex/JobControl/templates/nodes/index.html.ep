@@ -41,6 +41,31 @@
 </div>
 </div>
 
+<!-- dialogs -->
+
+
+<div id="add_group"
+  class="dialog-window rexio-ui-dialog"
+  title="Add new Group"
+  rexio-dialog-auto-open="false"
+  rexio-dialog-height="300"
+  rexio-dialog-width="350"
+  rexio-dialog-modal="true"
+  rexio-dialog-button-ok-value="Create"
+  rexio-dialog-button-cancel-value="Cancel"
+  rexio-dialog-button-ok-click="node/group.click_create_group"
+  rexio-dialog-button-cancel-click="node/group.click_create_group_cancel"
+>
+   <p class="validateTips">Add a new group</p>
+
+   <form>
+      <fieldset class="standard-form">
+         <label for="name">Name</label>
+         <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" value="" />
+      </fieldset>
+   </form>
+</div>
+
 <link href="/3rdparty/easytree/skin-lion/ui.easytree.css" rel="stylesheet">
 <script src="/3rdparty/easytree/jquery.easytree.min.js"></script>
 <script>

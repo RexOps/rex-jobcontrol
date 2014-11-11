@@ -10,8 +10,10 @@ use warnings;
 package Rex::JobControl::Helper::Project::Nodegroup;
 
 use File::Spec;
+use File::Path;
 use Mojo::JSON;
 use IO::All;
+use Digest::MD5 'md5_hex';
 
 sub new {
   my $that  = shift;
@@ -104,6 +106,38 @@ sub _config_file {
     $self->project->project_path(), "nodes",
     split( "/", $self->{directory} ), "group.conf.yml"
   );
+}
+
+sub create {
+  my ( $self, %data ) = @_;
+
+  my ($group_path);
+
+  if ( !exists $self->{directory} ) {
+    my @parent = split( /_/, $self->{parent} );
+
+    $group_path = $self->project->project_path( "nodes", @parent,
+      md5_hex( $self->{name} ) );
+    $self->{directory} =
+      File::Spec->abs2rel( $group_path, $self->project->project_path("nodes") );
+  }
+  else {
+    $group_path = File::Spec->catdir( $self->project->project_path,
+      "nodes", $self->{directory} );
+  }
+
+  $self->project->app->log->debug(
+    "Creating new nodegroup $self->{directory} in $group_path.");
+
+  File::Path::make_path($group_path);
+
+  delete $data{directory};
+  delete $data{parent};
+
+  my $nodegroup_configuration = {%data};
+
+  YAML::DumpFile( File::Spec->catfile( $group_path, "group.conf.yml" ),
+    $nodegroup_configuration );
 }
 
 1;

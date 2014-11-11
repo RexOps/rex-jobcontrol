@@ -8,11 +8,11 @@
 
     <!-- Bootstrap -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/jobcontrol.css" rel="stylesheet">
     <link href="/3rdparty/jquery-ui-1.11.1/jquery-ui.min.css" rel="stylesheet">
     <link href="/3rdparty/jquery-ui-1.11.1/jquery-ui.theme.min.css" rel="stylesheet">
     <link href="/3rdparty/jstree/themes/default/style.min.css" rel="stylesheet">
     <link href="//cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="/css/jobcontrol.css" rel="stylesheet">
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -20,6 +20,14 @@
     <script src="/3rdparty/jquery-ui-1.11.1/jquery-ui.min.js"></script>
     <script src="/3rdparty/jstree/jstree.min.js"></script>
     <script src="//cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+    <script src="/js/mootools-core-1.4.5-full-nocompat-yc.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/ui/plugin.js"></script>
+    <script src="/js/ui/dialog.js"></script>
+    <script src="/js/ui/prepare_widgets.js"></script>
+    <script src="/js/base.js"></script>
+    <script src="/js/node.js"></script>
+    <script src="/js/node/group.js"></script>
 
     <script src="/js/jobcontrol.js"></script>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -103,7 +111,7 @@
             <li class="dropdown active">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Nodes <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
-                <li><a href="/project/<%= $project->directory %>/node_group/new">New Group</a></li>
+                <li><a href="#" rexio-ui-click="node/group.add_group_dialog" class="rexio-ui-link">New Group</a></li>
                 <li class="disabled"><a href="#">Delete Group</a></li>
               </ul>
             </li>
@@ -134,5 +142,12 @@
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $(".mnu_new_group").on("click", function() {
+          alert("juhu");
+        });
+      });
+    </script>
   </body>
 </html>
