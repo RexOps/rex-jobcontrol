@@ -20,7 +20,7 @@ sub register {
   my $base_module = $options->{base_module} || "api";
 
   if ( exists $options->{bridge} && $options->{bridge} ) {
-    $r = $r->bridge($prefix)->to( $options->{bridge} );
+    $r      = $r->bridge($prefix)->to( $options->{bridge} );
     $prefix = '';
   }
 
@@ -55,21 +55,23 @@ sub register {
       # list available
       $r->get( "/" . join( "/", @o_path[ 0 .. $#o_path - 1 ] ) )
         ->to("$base_module-$object_route{$object}#list_\L$func_prefix");
+      $r->post( "/" . join( "/", @o_path[ 0 .. $#o_path - 1 ] ) )
+        ->to("$base_module-$object_route{$object}#create_\L$func_prefix");
     }
     else {
       $object_path{$object}  = "\L$object/:\L${object}_id";
       $object_route{$object} = "\L$object";
 
       # list available
-      $r->get("$prefix/\L$object")->to("$base_module-$object#list_\L$func_prefix");
+      $r->get("$prefix/\L$object")
+        ->to("$base_module-$object#list_\L$func_prefix");
+      $r->post("$prefix/\L$object")
+        ->to("$base_module-$object#create_\L$func_prefix");
     }
 
     $app->log->debug("Register RESTful routes for $object.");
     $app->log->debug("$object_path{$object} -> $object_route{$object}");
 
-    # crud operations
-    $r->post("$prefix/$object_path{$object}")
-      ->to("$base_module-$object_route{$object}#create_\L$func_prefix");
     $r->get("$prefix/$object_path{$object}")
       ->to("$base_module-$object_route{$object}#read_\L$func_prefix");
     $r->put("$prefix/$object_path{$object}")
