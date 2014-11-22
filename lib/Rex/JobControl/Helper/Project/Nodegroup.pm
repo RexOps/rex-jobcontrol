@@ -9,6 +9,7 @@ use warnings;
 
 package Rex::JobControl::Helper::Project::Nodegroup;
 
+use Data::Dumper;
 use File::Spec;
 use File::Path;
 use Mojo::JSON;
@@ -108,16 +109,25 @@ sub _config_file {
   );
 }
 
+sub remove {
+  my ($self) = @_;
+
+  my $nodegroup_dir = File::Spec->catdir( $self->project->project_path(),
+    "nodes", split( "/", $self->{directory} ) );
+
+  File::Path::remove_tree($nodegroup_dir);  
+}
+
 sub create {
   my ( $self, %data ) = @_;
 
   my ($group_path);
 
-  if ( !exists $self->{directory} ) {
-    my @parent = split( /_/, $self->{parent} );
+  if ( !exists $data{directory} ) {
+    my @parent = split( /_/, $data{parent} );
 
-    $group_path = $self->project->project_path( "nodes", @parent,
-      md5_hex( $self->{name} ) );
+    $group_path =
+      $self->project->project_path( "nodes", @parent, md5_hex( $data{name} ) );
     $self->{directory} =
       File::Spec->abs2rel( $group_path, $self->project->project_path("nodes") );
   }

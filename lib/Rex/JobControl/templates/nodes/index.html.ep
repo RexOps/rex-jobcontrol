@@ -77,10 +77,20 @@ $(document).ready(function() {
       "ajax": "/project/<%= $project->id %>/datatables/nodegroup/<%= $firstgroup->id %>"
     });
 
+  $('#server tbody').on('click', 'tr', function() {
+    if ( $(this).hasClass('selected') ) {
+      $(this).removeClass('selected');
+    }
+    else {
+      table.api().$('tr.selected').removeClass('selected');
+      $(this).addClass('selected');
+    }
+  });
+
   $('#server_tree').jstree({
     'core': {
       'data': {
-        'url': '/api/v1/project/<%= $project->directory %>/nodegroup',
+        'url': '/api/1.0/project/<%= $project->directory %>/nodegroup',
         'data': function (node) {
           console.log(node);
           return { 'id': node.id };
@@ -88,10 +98,12 @@ $(document).ready(function() {
         'check_callback': true
       }
     },
-    'plugins': ['wholerow', 'state', 'dnd']
+    'plugins': ['wholerow', 'state']
     }).on("select_node.jstree", function(node, sel, event) {
       console.log(sel.node.id);
       table.api().ajax.url("/project/<%= $project->id %>/datatables/nodegroup/" + sel.node.id ).load();
+      $("#li_delete_group").removeClass("disabled");
+      $("#li_add_node").removeClass("disabled");
     });
 
 } );

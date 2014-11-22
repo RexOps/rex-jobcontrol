@@ -13,6 +13,7 @@
     <link href="/3rdparty/jstree/themes/default/style.min.css" rel="stylesheet">
     <link href="//cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css" rel="stylesheet">
     <link href="/css/jobcontrol.css" rel="stylesheet">
+    <link href="/css/jquery.pnotify.default.css" rel="stylesheet">
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -28,6 +29,8 @@
     <script src="/js/base.js"></script>
     <script src="/js/node.js"></script>
     <script src="/js/node/group.js"></script>
+    <script src="/js/jquery.pnotify.js"></script>
+    <script src="/js/rexio.js"></script>
 
     <script src="/js/jobcontrol.js"></script>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -111,8 +114,14 @@
             <li class="dropdown active">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Nodes <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
+                <li id="li_add_node" rexio-ui-click="node.add_node_dialog" class="rexio-ui-link disabled"><a href="#">Add Node</a></li>
+                <li id="li_delete_node" rexio-ui-click="node.delete_node_dialog" class="rexio-ui-link disabled"><a href="#">Delete Node</a></li>
+                <li id="li_move_node" rexio-ui-click="node.move_node_dialog" class="rexio-ui-link disabled"><a href="#">Move Node</a></li>
+
+                <li class="divider"></li>
+
                 <li><a href="#" rexio-ui-click="node/group.add_group_dialog" class="rexio-ui-link">New Group</a></li>
-                <li class="disabled"><a href="#">Delete Group</a></li>
+                <li id="li_delete_group" rexio-ui-click="node/group.delete_group_dialog" class="rexio-ui-link disabled"><a href="#">Delete Group</a></li>
               </ul>
             </li>
 

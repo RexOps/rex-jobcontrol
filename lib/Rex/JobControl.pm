@@ -229,7 +229,7 @@ sub startup {
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::Project");
   $self->plugin(
     "Rex::JobControl::Mojolicious::Plugin::RestRoutes",
-    prefix      => "/api/v1",
+    prefix      => "/api/1.0",
     base_module => "api",
     bridge      => 'dashboard#prepare_stash',
     objects     => [
@@ -259,6 +259,34 @@ sub startup {
       },
     }
   );
+  $self->plugin(
+    "http_basic_auth",
+    {
+      validate => sub {
+        my ( $c, $username, $pass, $realm ) = @_;
+        $c->app->log->debug(
+          "Basic-Auth user: $username with password $pass.");
+        my $user = $c->app->get_user($username);
+        if ( $c->app->check_password($username, $pass) ) {
+          $c->session("uid" => $user->{name});
+          return $user->{name};
+        }
+
+        return 0;
+      },
+      invalid => sub {
+        my $ctrl = shift;
+        return (
+          any => {
+            json =>
+              { ok => Mojo::JSON->false, error => "HTTP 401: Unauthorized" }
+          },
+        );
+      },
+      realm => 'Rex-JobControl'
+    }
+  );
+
 
   #######################################################################
   # Define routes
