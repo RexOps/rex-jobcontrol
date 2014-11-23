@@ -178,9 +178,11 @@ sub get_nodes {
 
   my $nodes_dir = $self->project_path("nodes");
 
+  my @files = io($nodes_dir)->All_Files;
+
   my @nodes = grep {
-    $_ eq "node.conf.yml" && $filter->($_)
-  } io($nodes_dir)->All_files;
+    $_->name =~  m/node.conf.yml$/ && $filter->($_)
+  } @files;
 
   return \@nodes;
 }

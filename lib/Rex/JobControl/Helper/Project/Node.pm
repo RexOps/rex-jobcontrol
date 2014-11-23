@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-   
+
 use strict;
 use warnings;
 
@@ -17,11 +17,11 @@ use IO::All;
 use Digest::MD5 'md5_hex';
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   if ( $self->{node_id} ) {
     my @parts = split( /_/, $self->{node_id} );
@@ -50,11 +50,25 @@ sub data {
 
   my $id = $self->id;
 
+  my $pro_data = {};
+  eval {
+    my $provisioner = $self->project->app->provisioner(
+      $self->{node_configuration}->{type},
+      %{ $self->{node_configuration}->{data} },
+      name      => $self->name,
+      project   => $self->project,
+      docker_id => $self->{node_configuration}->{data}->{docker_id},
+    );
+
+    $pro_data = $provisioner->get_data;
+  };
+
   return {
     id        => $self->id,
     parent_id => join( "_", @dir_struct[ 0 .. $#dir_struct - 1 ] ),
     text      => $self->name,
     %{ $self->{node_configuration} },
+    provisioner => $pro_data,
   };
 }
 
@@ -65,9 +79,9 @@ sub id {
   return join( "_", @dirs );
 }
 
-sub project     { (shift)->{project} }
-sub name        { (shift)->{node_configuration}->{name} }
-sub directory   { (shift)->{directory} }
+sub project   { (shift)->{project} }
+sub name      { (shift)->{node_configuration}->{name} }
+sub directory { (shift)->{directory} }
 
 sub load {
   my ($self) = @_;
@@ -113,20 +127,45 @@ sub create {
 
   my $node_configuration = {%data};
 
+  my $provisioner = $self->project->app->provisioner(
+    $node_configuration->{type}, %{ $node_configuration->{data} },
+    name    => $data{name},
+    project => $self->project
+  );
+
+  my $pro_data = $provisioner->create;
+  for my $key ( keys %{$pro_data} ) {
+    $node_configuration->{data}->{$key} = $pro_data->{$key};
+  }
+
   YAML::DumpFile( File::Spec->catfile( $node_path, "node.conf.yml" ),
     $node_configuration );
 
-  my $provisioner = $self->project->app->provisioner($node_configuration->{type}, %{ $node_configuration->{data} }, project => $self->project);
-  $provisioner->create;
+  return {
+    id => $self->id,
+    %{ $node_configuration },
+  };
 }
 
 sub remove {
   my ($self) = @_;
 
+  eval {
+    my $provisioner = $self->project->app->provisioner(
+      $self->{node_configuration}->{type},
+      %{ $self->{node_configuration}->{data} },
+      name      => $self->name,
+      project   => $self->project,
+      docker_id => $self->{node_configuration}->{data}->{docker_id},
+    );
+
+    $provisioner->remove;
+  };
+
   my $node_dir = File::Spec->catdir( $self->project->project_path(),
     "nodes", split( "/", $self->{directory} ) );
 
-  File::Path::remove_tree($node_dir);  
+  File::Path::remove_tree($node_dir);
 }
 
 1;
