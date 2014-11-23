@@ -127,16 +127,18 @@ sub create {
 
   my $node_configuration = {%data};
 
-  my $provisioner = $self->project->app->provisioner(
-    $node_configuration->{type}, %{ $node_configuration->{data} },
-    name    => $data{name},
-    project => $self->project
-  );
+  eval {
+    my $provisioner = $self->project->app->provisioner(
+      $node_configuration->{type}, %{ $node_configuration->{data} },
+      name    => $data{name},
+      project => $self->project
+    );
 
-  my $pro_data = $provisioner->create;
-  for my $key ( keys %{$pro_data} ) {
-    $node_configuration->{data}->{$key} = $pro_data->{$key};
-  }
+    my $pro_data = $provisioner->create;
+    for my $key ( keys %{$pro_data} ) {
+      $node_configuration->{data}->{$key} = $pro_data->{$key};
+    }
+  };
 
   YAML::DumpFile( File::Spec->catfile( $node_path, "node.conf.yml" ),
     $node_configuration );
