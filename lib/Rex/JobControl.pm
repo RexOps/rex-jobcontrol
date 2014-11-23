@@ -227,6 +227,8 @@ sub startup {
   }
 
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::Project");
+  $self->plugin("Rex::JobControl::Mojolicious::Plugin::SSH");
+  $self->plugin("Rex::JobControl::Mojolicious::Plugin::Provisioner");
   $self->plugin(
     "Rex::JobControl::Mojolicious::Plugin::RestRoutes",
     prefix      => "/api/1.0",
@@ -354,6 +356,17 @@ sub startup {
   $job_r->get('/execute')->to('job#job_execute');
   $job_r->post('/execute')->to('job#job_execute_dispatch');
   $job_r->get('/:job_id/output')->to('job#view_output_log');
+
+
+  #######################################################################
+  # Load Plugins
+  #######################################################################
+  for my $plug ( @{ $self->config->{plugins} } ) { 
+    eval "use $plug;";
+    if($@) {
+      $self->app->log->error("Can't load $plug: $@");
+    }
+  }
 
   #######################################################################
   # for the package

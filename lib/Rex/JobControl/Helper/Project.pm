@@ -173,6 +173,18 @@ sub get_job {
   );
 }
 
+sub get_nodes {
+  my ( $self, $filter ) = @_;
+
+  my $nodes_dir = $self->project_path("nodes");
+
+  my @nodes = grep {
+    $_ eq "node.conf.yml" && $filter->($_)
+  } io($nodes_dir)->All_files;
+
+  return \@nodes;
+}
+
 sub get_nodegroup {
   my ( $self, $id ) = @_;
   return Rex::JobControl::Helper::Project::Nodegroup->new(
