@@ -115,6 +115,9 @@ sub create {
 
   YAML::DumpFile( File::Spec->catfile( $node_path, "node.conf.yml" ),
     $node_configuration );
+
+  my $provisioner = $self->project->app->provisioner($node_configuration->{type}, %{ $node_configuration->{data} }, project => $self->project);
+  $provisioner->create;
 }
 
 sub remove {
