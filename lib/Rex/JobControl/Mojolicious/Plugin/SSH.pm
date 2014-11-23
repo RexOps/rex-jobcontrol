@@ -24,7 +24,7 @@ sub register {
   $app->helper(
     ssh_pool => sub {
       my ( $self ) = @_;
-      state $ssh_pool = Rex::JobControl::ConnectionPool::SSH->new;
+      state $ssh_pool = Rex::JobControl::ConnectionPool::SSH->new(app => $app);
       return $ssh_pool;
     }
   );

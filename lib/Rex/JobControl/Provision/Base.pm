@@ -18,4 +18,6 @@ sub remove {}
 # fullfill the required provisioning type
 sub get_hosts {}
 
+sub get_host {}
+
 1;

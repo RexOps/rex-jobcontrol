@@ -60,8 +60,8 @@ sub create_object {
 
   $self->app->log->debug("Got JSON: " . Dumper($self->req->json));
 
-  $o->create(%{ $self->req->json });
-  $self->render( json => {}, status => 201 );
+  my $data = $o->create(%{ $self->req->json });
+  $self->render( json => $data, status => 201 );
 }
 
 sub read_object {
