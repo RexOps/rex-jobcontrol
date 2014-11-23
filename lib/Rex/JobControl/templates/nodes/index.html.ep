@@ -22,11 +22,13 @@
       <table id="server" class="display" cellspacing="0" width="100%">
         <thead>
           <tr>
+            <th>ID</th>
             <th>Name</th>
           </tr>
         </thead>
         <tfoot>
           <tr>
+            <th>ID</th>
             <th>Name</th>
           </tr>
         </tfoot>
@@ -74,7 +76,14 @@ var table;
 
 $(document).ready(function() {
   table = $('#server').dataTable({
-      "ajax": "/project/<%= $project->id %>/datatables/nodegroup/<%= $firstgroup->id %>"
+      "ajax": "/project/<%= $project->id %>/datatables/nodegroup/<%= $firstgroup->id %>",
+      "columnDefs": [
+        {
+          "targets": [ 0 ],
+          "visible": false,
+          "searchable": true
+        }
+      ]
     });
 
   $('#server tbody').on('click', 'tr', function() {

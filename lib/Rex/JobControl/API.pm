@@ -57,6 +57,9 @@ sub list_object {
 sub create_object {
   my ($self)   = @_;
   my $o = $self->_prepare_object;
+
+  $self->app->log->debug("Got JSON: " . Dumper($self->req->json));
+
   $o->create(%{ $self->req->json });
   $self->render( json => {}, status => 201 );
 }

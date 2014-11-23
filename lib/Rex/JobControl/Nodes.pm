@@ -35,7 +35,7 @@ sub get_nodes_from_group {
   my @ret;
 
   for my $node ( @{$nodes} ) {
-    push @ret, [ $node->{name}, ];
+    push @ret, [ $node->id, $node->name, ];
   }
 
   $self->render( json => { data => \@ret } );
