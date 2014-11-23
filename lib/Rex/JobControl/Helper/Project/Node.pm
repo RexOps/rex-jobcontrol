@@ -7,7 +7,14 @@
 use strict;
 use warnings;
 
-package Rex::JobControl::Helper::Node;
+package Rex::JobControl::Helper::Project::Node;
+
+use Data::Dumper;
+use File::Spec;
+use File::Path;
+use Mojo::JSON;
+use IO::All;
+use Digest::MD5 'md5_hex';
 
 sub new {
   my $that = shift;
@@ -64,8 +71,9 @@ sub directory   { (shift)->{directory} }
 
 sub load {
   my ($self) = @_;
+
   if ( -f $self->_config_file() ) {
-    $self->{nodegroup_configuration} = YAML::LoadFile( $self->_config_file );
+    $self->{node_configuration} = YAML::LoadFile( $self->_config_file );
   }
 }
 
@@ -109,5 +117,13 @@ sub create {
     $node_configuration );
 }
 
+sub remove {
+  my ($self) = @_;
+
+  my $node_dir = File::Spec->catdir( $self->project->project_path(),
+    "nodes", split( "/", $self->{directory} ) );
+
+  File::Path::remove_tree($node_dir);  
+}
 
 1;

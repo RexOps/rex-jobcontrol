@@ -18,6 +18,7 @@ use IO::All;
 use Rex::JobControl::Helper::Project::Job;
 use Rex::JobControl::Helper::Project::Rexfile;
 use Rex::JobControl::Helper::Project::Formular;
+use Rex::JobControl::Helper::Project::Node;
 use Rex::JobControl::Helper::Project::Nodegroup;
 
 sub new {

@@ -70,9 +70,7 @@ sub get_nodes {
   while ( my $entry = readdir($dh) ) {
     next if ( $entry =~ m/^\./ );
     if ( -f File::Spec->catfile( $group_dir, $entry, "node.conf.yml" ) ) {
-      push @ret,
-        YAML::LoadFile(
-        File::Spec->catfile( $group_dir, $entry, "node.conf.yml" ) );
+      push @ret, Rex::JobControl::Helper::Project::Node->new(node_id => $self->id . "_" . $entry, project => $self->project);
     }
   }
   close($dh);
