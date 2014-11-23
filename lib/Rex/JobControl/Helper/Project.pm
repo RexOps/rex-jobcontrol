@@ -108,6 +108,17 @@ sub create {
   File::Path::make_path( File::Spec->catdir( $project_path, "jobs" ) );
   File::Path::make_path( File::Spec->catdir( $project_path, "rex" ) );
   File::Path::make_path( File::Spec->catdir( $project_path, "formulars" ) );
+  File::Path::make_path( File::Spec->catdir( $project_path, "nodes" ) );
+
+  my $root_node_md5 = md5_hex("/ [Root]");
+  File::Path::make_path(
+    File::Spec->catdir( $project_path, "nodes", $root_node_md5 ) );
+  YAML::DumpFile(
+    File::Spec->catfile(
+      $project_path, "nodes", $root_node_md5, "group.conf.yml"
+    ),
+    { name => "/ [Root]" }
+  );
 
   my $project_configuration = { name => $self->{name}, };
 
@@ -180,9 +191,7 @@ sub get_nodes {
 
   my @files = io($nodes_dir)->All_Files;
 
-  my @nodes = grep {
-    $_->name =~  m/node.conf.yml$/ && $filter->($_)
-  } @files;
+  my @nodes = grep { $_->name =~ m/node.conf.yml$/ && $filter->($_) } @files;
 
   return \@nodes;
 }
