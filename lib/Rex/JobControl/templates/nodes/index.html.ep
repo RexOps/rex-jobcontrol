@@ -74,6 +74,8 @@
 var tree;
 var table;
 
+var table_selected = null;
+
 $(document).ready(function() {
   table = $('#server').dataTable({
       "ajax": "/project/<%= $project->id %>/datatables/nodegroup/<%= $firstgroup->id %>",
@@ -89,10 +91,15 @@ $(document).ready(function() {
   $('#server tbody').on('click', 'tr', function() {
     if ( $(this).hasClass('selected') ) {
       $(this).removeClass('selected');
+      $("#li_delete_node").addClass('disabled');
+      table_selected = null;
+      table_selected = null;
     }
     else {
       table.api().$('tr.selected').removeClass('selected');
       $(this).addClass('selected');
+      $("#li_delete_node").removeClass('disabled');
+      table_selected = table.api().row(this).data();
     }
   });
 
