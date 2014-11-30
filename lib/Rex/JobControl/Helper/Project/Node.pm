@@ -51,17 +51,18 @@ sub data {
   my $id = $self->id;
 
   my $pro_data = {};
-  eval {
-    my $provisioner = $self->project->app->provisioner(
-      $self->{node_configuration}->{type},
-      %{ $self->{node_configuration}->{data} },
-      name      => $self->name,
-      project   => $self->project,
-      docker_id => $self->{node_configuration}->{data}->{docker_id},
-    );
+  if ( exists $self->{node_configuration}->{type} ) {
+    eval {
+      my $provisioner = $self->project->app->provisioner(
+        $self->{node_configuration}->{type},
+        %{ $self->{node_configuration}->{data} },
+        name      => $self->name,
+        project   => $self->project,
+      );
 
-    $pro_data = $provisioner->get_data;
-  };
+      $pro_data = $provisioner->get_data;
+    };
+  }
 
   return {
     id        => $self->id,
@@ -145,24 +146,25 @@ sub create {
 
   return {
     id => $self->id,
-    %{ $node_configuration },
+    %{$node_configuration},
   };
 }
 
 sub remove {
   my ($self) = @_;
 
-  eval {
-    my $provisioner = $self->project->app->provisioner(
-      $self->{node_configuration}->{type},
-      %{ $self->{node_configuration}->{data} },
-      name      => $self->name,
-      project   => $self->project,
-      docker_id => $self->{node_configuration}->{data}->{docker_id},
-    );
+  if( exists $self->{node_configuration}->{type} ) {
+    eval {
+      my $provisioner = $self->project->app->provisioner(
+        $self->{node_configuration}->{type},
+        %{ $self->{node_configuration}->{data} },
+        name      => $self->name,
+        project   => $self->project,
+      );
 
-    $provisioner->remove;
-  };
+      $provisioner->remove;
+    };
+ }
 
   my $node_dir = File::Spec->catdir( $self->project->project_path(),
     "nodes", split( "/", $self->{directory} ) );
