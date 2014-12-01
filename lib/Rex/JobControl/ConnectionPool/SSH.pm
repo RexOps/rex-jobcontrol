@@ -19,11 +19,13 @@ has app => (is => 'ro');
 sub connect_to {
   my ($self, $server, %data) = @_;
 
-  if($self->has_connection($server)) {
-    $self->use_connection($server);
+  my $conn_id = $self->_get_connection_id($server, %data);
+
+  if($self->has_connection($conn_id)) {
+    $self->use_connection($conn_id);
   }
   else {
-    $self->add_connection($server, %data);
+    $self->add_connection($conn_id, %data);
   }
 }
 
@@ -31,11 +33,12 @@ sub add_connection {
   my ( $self, $name, %opts ) = @_;
 
   $opts{server} = $name;
+  my $conn_id = $self->_get_connection_id($server, %opts);
 
   $self->app->log->debug("[SSH] Connecting to: $name");
 
   my $conn = Rex::connect(%opts);
-  $self->connections->{$name} = $conn;
+  $self->connections->{$conn_id} = $conn;
 }
 
 sub has_connection {
@@ -47,7 +50,7 @@ sub has_connection {
 }
 
 sub use_connection {
-  my ( $self, $name, %opts ) = @_;
+  my ( $self, $name ) = @_;
 
   if ( exists $self->connections->{$name} ) {
     Rex::connect( cached_connection => $self->connections->{$name} );
@@ -55,6 +58,11 @@ sub use_connection {
   else {
     confess "No connection found: $name.";
   }
+}
+
+sub _get_connection_id {
+  my ($self, $name, %opts) = @_;
+  return "$name-$opts{user}";
 }
 
 1;
