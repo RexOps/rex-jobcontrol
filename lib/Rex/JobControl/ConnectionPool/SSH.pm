@@ -33,7 +33,7 @@ sub add_connection {
   my ( $self, $name, %opts ) = @_;
 
   $opts{server} = $name;
-  my $conn_id = $self->_get_connection_id($server, %opts);
+  my $conn_id = $self->_get_connection_id($name, %opts);
 
   $self->app->log->debug("[SSH] Connecting to: $name");
 
