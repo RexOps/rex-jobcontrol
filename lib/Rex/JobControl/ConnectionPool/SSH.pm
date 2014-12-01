@@ -25,7 +25,7 @@ sub connect_to {
     $self->use_connection($conn_id);
   }
   else {
-    $self->add_connection($conn_id, %data);
+    $self->add_connection($server, %data);
   }
 }
 
