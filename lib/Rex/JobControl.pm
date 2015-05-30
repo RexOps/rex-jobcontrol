@@ -297,16 +297,16 @@ sub startup {
 
   # Normal route to controller
 
-  my $r = $base_routes->bridge('/')->to('dashboard#prepare_stash');
+  my $r = $base_routes->under('/')->to('dashboard#prepare_stash');
 
   $r->get('/login')->to('dashboard#login');
   $r->post('/login')->to('dashboard#login_post');
 
   my $r_formular_execute =
-    $r->bridge('/project/:project_dir/formular/:formular_dir/execute')
+    $r->under('/project/:project_dir/formular/:formular_dir/execute')
     ->to("formular#check_public");
 
-  my $r_auth = $r->bridge('/')->to("dashboard#check_login");
+  my $r_auth = $r->under('/')->to("dashboard#check_login");
 
   $r_auth->get('/logout')->to('dashboard#ctrl_logout');
   $r_auth->get('/')->to('dashboard#index');
@@ -316,12 +316,12 @@ sub startup {
   $r_auth->post('/project/new')->to('project#project_new_create');
 
   my $project_r =
-    $r_auth->bridge('/project/:project_dir')->to('project#prepare_stash');
-  my $rex_r = $r_auth->bridge('/project/:project_dir/rexfile/:rexfile_dir')
+    $r_auth->under('/project/:project_dir')->to('project#prepare_stash');
+  my $rex_r = $r_auth->under('/project/:project_dir/rexfile/:rexfile_dir')
     ->to('rexfile#prepare_stash');
-  my $job_r = $r_auth->bridge('/project/:project_dir/job/:job_dir')
+  my $job_r = $r_auth->under('/project/:project_dir/job/:job_dir')
     ->to('job#prepare_stash');
-  my $form_r = $r_auth->bridge('/project/:project_dir/formular/:formular_dir')
+  my $form_r = $r_auth->under('/project/:project_dir/formular/:formular_dir')
     ->to('formular#prepare_stash');
 
   $project_r->get('/nodes')->to('nodes#index');
