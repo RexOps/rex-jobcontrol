@@ -20,7 +20,7 @@ sub register {
   my $base_module = $options->{base_module} || "api";
 
   if ( exists $options->{bridge} && $options->{bridge} ) {
-    $r      = $r->bridge($prefix)->to( $options->{bridge} );
+    $r      = $r->under($prefix)->to( $options->{bridge} );
     $prefix = '';
   }
 

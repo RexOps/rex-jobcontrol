@@ -33,7 +33,7 @@ sub register {
         }
       }
 
-      return undef;
+      return;
     },
   );
 
@@ -57,7 +57,7 @@ sub register {
         return $user->{name};
       }
 
-      return undef;
+      return;
     },
   );
 }

@@ -7,7 +7,7 @@
 package Rex::JobControl::Helper::AuditLog;
 
 use base 'Mojo::Log';
-use Mojo::JSON;
+use Mojo::JSON qw(decode_json encode_json);
 use DateTime;
 
 sub new {
@@ -17,7 +17,7 @@ sub new {
 
   bless( $self, $proto );
 
-  $self->{json} = Mojo::JSON->new;
+  # $self->{json} = Mojo::JSON->new;
 
   return $self;
 }
@@ -29,7 +29,7 @@ sub audit {
   my $dt = DateTime->now;
   $data->{package} = $package;
 
-  $self->info( $self->json->encode($data) );
+  $self->info( encode_json($data) );
 }
 
 sub json { (shift)->{json} }
