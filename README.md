@@ -59,10 +59,14 @@ The configuration file is searched in these places:
 ```perl
 {
   project_path => "./projects/",
-  minion_db_file => "./minion.data",
+  upload_tmp_path => "./upload/",
 
   rex => "/usr/bin/rex",
   rexify => "/usr/bin/rexify",
+
+  backend => { Pg => 'postgresql://user:password@host:port/database' },
+  # other options: mysql, SQLite, MongoDB, Mango
+  # See https://metacpan.org/search?q=minion+backend+[your backend]
 
   session => {
     key => 'Rex::JobControl',

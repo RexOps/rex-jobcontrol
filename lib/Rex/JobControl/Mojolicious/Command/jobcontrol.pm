@@ -78,13 +78,6 @@ sub run {
       $changed = 1;
     }
 
-    if ( !-d dirname( $self->app->config->{minion_db_file} ) ) {
-      $self->app->log->info( "Creating minion db path: "
-          . dirname( $self->app->config->{minion_db_file} ) );
-      File::Path::make_path( dirname( $self->app->config->{minion_db_file} ) );
-      $changed = 1;
-    }
-
     if ( !-d $self->app->config->{upload_tmp_path} ) {
       $self->app->log->info(
         "Creating upload_tmp_path: " . $self->app->config->{upload_tmp_path} );
