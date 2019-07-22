@@ -23,9 +23,31 @@ sub new {
 
   bless( $self, $proto );
 
+  if ( $self->{formular_id} ) {
+    $self->{directory} = $self->{formular_id};
+    delete $self->{formular_id};
+  }
+
+  if ( $self->{project_id} ) {
+    $self->{project} = Rex::JobControl::Helper::Project->new(
+      app        => $self->{app},
+      project_id => $self->{project_id}
+    );
+    delete $self->{project_id};
+  }
+
   $self->load;
 
   return $self;
+}
+
+sub data {
+  my ($self) = @_;
+  $self->load;
+  return {
+    id => $self->{directory},
+    %{ $self->{formular_configuration} },
+  };
 }
 
 sub name        { (shift)->{formular_configuration}->{name} }

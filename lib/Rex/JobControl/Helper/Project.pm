@@ -13,10 +13,13 @@ use File::Spec;
 use File::Path;
 use YAML;
 use Digest::MD5 'md5_hex';
+use IO::All;
 
 use Rex::JobControl::Helper::Project::Job;
 use Rex::JobControl::Helper::Project::Rexfile;
 use Rex::JobControl::Helper::Project::Formular;
+use Rex::JobControl::Helper::Project::Node;
+use Rex::JobControl::Helper::Project::Nodegroup;
 
 sub new {
   my $that  = shift;
@@ -24,6 +27,11 @@ sub new {
   my $self  = {@_};
 
   bless( $self, $proto );
+
+  if ( $self->{project_id} ) {
+    $self->{directory} = $self->{project_id};
+    delete $self->{project_id};
+  }
 
   $self->load;
 
@@ -33,6 +41,16 @@ sub new {
 sub app       { (shift)->{app}; }
 sub name      { (shift)->{project_configuration}->{name}; }
 sub directory { (shift)->{directory}; }
+sub id        { (shift)->{directory}; }
+
+sub data {
+  my ($self) = @_;
+  $self->load;
+  return {
+    id => $self->{directory},
+    %{ $self->{project_configuration} },
+  };
+}
 
 sub dump {
   my ($self) = @_;
@@ -45,7 +63,7 @@ sub load {
 
   if ( -f $self->_config_file() ) {
     $self->{project_configuration} = YAML::LoadFile( $self->_config_file );
-    $self->{name} = $self->{project_configuration}->{name};
+    $self->{name}                  = $self->{project_configuration}->{name};
   }
 
   #$self->{directory} = $self->{name};
@@ -57,10 +75,10 @@ sub _config_file {
 }
 
 sub project_path {
-  my ($self) = @_;
+  my ( $self, @dirs ) = @_;
 
   my $path = File::Spec->rel2abs( $self->app->config->{project_path} );
-  my $project_path = File::Spec->catdir( $path, $self->{directory} );
+  my $project_path = File::Spec->catdir( $path, $self->{directory}, @dirs );
 
   return $project_path;
 }
@@ -68,8 +86,9 @@ sub project_path {
 sub get_last_job_execution {
   my ($self) = @_;
 
-  my $last_run_status_file = File::Spec->catfile($self->project_path, "last.run.status.yml");
-  if(-f $last_run_status_file) {
+  my $last_run_status_file =
+    File::Spec->catfile( $self->project_path, "last.run.status.yml" );
+  if ( -f $last_run_status_file ) {
     return YAML::LoadFile($last_run_status_file);
   }
 
@@ -77,7 +96,7 @@ sub get_last_job_execution {
 }
 
 sub create {
-  my ($self) = @_;
+  my ( $self, %data ) = @_;
 
   my $path = File::Spec->rel2abs( $self->app->config->{project_path} );
   my $project_path = File::Spec->catdir( $path, md5_hex( $self->{name} ) );
@@ -89,6 +108,17 @@ sub create {
   File::Path::make_path( File::Spec->catdir( $project_path, "jobs" ) );
   File::Path::make_path( File::Spec->catdir( $project_path, "rex" ) );
   File::Path::make_path( File::Spec->catdir( $project_path, "formulars" ) );
+  File::Path::make_path( File::Spec->catdir( $project_path, "nodes" ) );
+
+  my $root_node_md5 = md5_hex("/ [Root]");
+  File::Path::make_path(
+    File::Spec->catdir( $project_path, "nodes", $root_node_md5 ) );
+  YAML::DumpFile(
+    File::Spec->catfile(
+      $project_path, "nodes", $root_node_md5, "group.conf.yml"
+    ),
+    { name => "/ [Root]" }
+  );
 
   my $project_configuration = { name => $self->{name}, };
 
@@ -120,6 +150,12 @@ sub job_count {
   return scalar( @{$jobs} );
 }
 
+sub list_jobs {
+  my ($self) = @_;
+  my @jobs = map { $_->data } @{ $self->jobs };
+  return \@jobs;
+}
+
 sub jobs {
   my ($self) = @_;
 
@@ -148,6 +184,26 @@ sub get_job {
   );
 }
 
+sub get_nodes {
+  my ( $self, $filter ) = @_;
+
+  my $nodes_dir = $self->project_path("nodes");
+
+  my @files = io($nodes_dir)->All_Files;
+
+  my @nodes = grep { $_->name =~ m/node.conf.yml$/ && $filter->($_) } @files;
+
+  return \@nodes;
+}
+
+sub get_nodegroup {
+  my ( $self, $id ) = @_;
+  return Rex::JobControl::Helper::Project::Nodegroup->new(
+    nodegroup_id => $id,
+    project      => $self
+  );
+}
+
 sub create_job {
   my ( $self, %data ) = @_;
 
@@ -162,6 +218,12 @@ sub rexfile_count {
   my ($self) = @_;
   my $rexfiles = $self->rexfiles;
   return scalar( @{$rexfiles} );
+}
+
+sub list_rexfiles {
+  my ($self) = @_;
+  my @rexfiles = map { $_->data } @{ $self->rexfiles };
+  return \@rexfiles;
 }
 
 sub rexfiles {
@@ -223,10 +285,64 @@ sub remove {
   File::Path::remove_tree( $self->project_path() );
 }
 
+sub list_nodegroups {
+  my ($self) = @_;
+
+  my @ret = map { $_->data } @{ $self->nodegroups };
+
+  my %lookup_map;
+
+  for my $l (@ret) {
+    $lookup_map{ $l->{id} } = $l;
+  }
+
+  for my $c (@ret) {
+    if ( $c->{parent_id} && $lookup_map{ $c->{parent_id} } ) {
+      if (!exists $lookup_map{ $c->{parent_id} }->{children}
+        || ref( $lookup_map{ $c->{parent_id} }->{children} ) ne "ARRAY" )
+      {
+        $lookup_map{ $c->{parent_id} }->{children} = [];
+      }
+
+      push @{ $lookup_map{ $c->{parent_id} }->{children} }, $c;
+    }
+  }
+
+  return [ $ret[0] ];
+}
+
+sub nodegroups {
+  my ($self) = @_;
+
+  if ( !-d $self->project_path("nodes") ) {
+    return [];
+  }
+
+  my @groups = map {
+    my $dir      = $_->name;
+    my $pro_path = $self->project_path("nodes");
+    $dir =~ s/^\Q$pro_path\E.//;
+
+    $_ = Rex::JobControl::Helper::Project::Nodegroup->new(
+      directory => $dir,
+      project   => $self
+    );
+    } grep { -d $_->name && -f File::Spec->catfile( $_->name, "group.conf.yml" ) }
+    io( $self->project_path("nodes") )->All;
+
+  return \@groups;
+}
+
 sub formular_count {
   my ($self) = @_;
   my $forms = $self->formulars;
   return scalar( @{$forms} );
+}
+
+sub list_formulars {
+  my ($self) = @_;
+  my @formulars = map { $_->data } @{ $self->formulars };
+  return \@formulars;
 }
 
 sub formulars {

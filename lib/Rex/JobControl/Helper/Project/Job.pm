@@ -23,6 +23,19 @@ sub new {
 
   bless( $self, $proto );
 
+  if ( $self->{job_id} ) {
+    $self->{directory} = $self->{job_id};
+    delete $self->{job_id};
+  }
+
+  if ( $self->{project_id} ) {
+    $self->{project} = Rex::JobControl::Helper::Project->new(
+      app        => $self->{app},
+      project_id => $self->{project_id}
+    );
+    delete $self->{project_id};
+  }
+
   $self->load;
 
   return $self;
@@ -35,6 +48,15 @@ sub project          { (shift)->{project} }
 sub directory        { (shift)->{directory} }
 sub fail_strategy    { (shift)->{job_configuration}->{fail_strategy} }
 sub execute_strategy { (shift)->{job_configuration}->{execute_strategy} }
+
+sub data {
+  my ($self) = @_;
+  $self->load;
+  return {
+    id => $self->{directory},
+    %{ $self->{job_configuration} },
+  };
+}
 
 sub steps {
   my ($self) = @_;
@@ -261,7 +283,6 @@ sub execute {
       status     => \@status,
     }
   );
-
 
 }
 

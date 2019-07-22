@@ -110,3 +110,43 @@ To start the Webinterface you have to run this command. This will start a webser
 hypnotoad bin/rex_job_control 
 ```
 
+
+
+## REST API
+
+Every object can be accessed via a REST api.
+
+### Nodes
+
+Get information of a node:
+
+```
+curl -D- -XGET \
+  http://admin:admin@localhost:3000/api/1.0/project/{project_id}/node/{node_id}
+```
+
+Create a new node:
+
+```javascript
+{
+  "name"  : "foo01",
+  "type"  : "docker",
+  "parent": "db188e3449615a2c64685abe0802f55f_a673946c007d6a9927f70bdf5d491861",
+  "data": {
+    "image": "centos:centos6"
+  }
+}
+```
+
+```
+curl -D- -XPOST -d@node_create.json \
+  http://admin:admin@localhost:3000/api/1.0/project/{project_id}/node
+```
+
+Delete a node:
+
+```
+curl -D- -XDELETE \
+  http://admin:admin@localhost:3000/api/1.0/project/{project_id}/node/{node_id}
+```
+

@@ -4,41 +4,124 @@
 
 <p>This table list all nodes known to the current project. These nodes are generated out of the groups in your <i>Rexfiles</i>.</p>
 
-<div class="panel panel-default">
+<div class="container-fluid">
+      <div class="row">
 
-  <div class="panel-heading">Nodes</div>
-  <div class="panel-body">
-
-    <table id="server" class="display" cellspacing="0" width="100%">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Group</th>
-        </tr>
-      </thead>
-      <tfoot>
-        <tr>
-          <th>Name</th>
-          <th>Group</th>
-        </tr>
-      </tfoot>
-      <tbody>
-  % for my $srv (@{ $project->all_server }) {
-        <tr>
-          <td><%= $srv->{name} %></td>
-          <td><%= $srv->{group} %></td>
-        </tr>
-  % }
-      </tbody>
-    </table>
-
+<div class="col-sm-3 col-md-2 sidebar">
+  <div id="server_tree" class="nav nav-sidebar">
   </div>
 </div>
 
+<div class="col-sm-8 col-sm-offset-2 col-md-9 col-md-offset-1 main">
 
+  <div class="panel panel-default">
+
+    <div class="panel-heading">Nodes</div>
+    <div class="panel-body">
+
+      <table id="server" class="display" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+          </tr>
+        </tfoot>
+        <tbody>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+</div>
+</div>
+</div>
+
+<!-- dialogs -->
+
+
+<div id="add_group"
+  class="dialog-window rexio-ui-dialog"
+  title="Add new Group"
+  rexio-dialog-auto-open="false"
+  rexio-dialog-height="300"
+  rexio-dialog-width="350"
+  rexio-dialog-modal="true"
+  rexio-dialog-button-ok-value="Create"
+  rexio-dialog-button-cancel-value="Cancel"
+  rexio-dialog-button-ok-click="node/group.click_create_group"
+  rexio-dialog-button-cancel-click="node/group.click_create_group_cancel"
+>
+   <p class="validateTips">Add a new group</p>
+
+   <form>
+      <fieldset class="standard-form">
+         <label for="name">Name</label>
+         <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" value="" />
+      </fieldset>
+   </form>
+</div>
+
+<link href="/3rdparty/easytree/skin-lion/ui.easytree.css" rel="stylesheet">
+<script src="/3rdparty/easytree/jquery.easytree.min.js"></script>
 <script>
+var tree;
+var table;
+
+var table_selected = null;
+
 $(document).ready(function() {
-  $('#server').dataTable();
+  table = $('#server').dataTable({
+      "ajax": "/project/<%= $project->id %>/datatables/nodegroup/<%= $firstgroup->id %>",
+      "columnDefs": [
+        {
+          "targets": [ 0 ],
+          "visible": false,
+          "searchable": true
+        }
+      ]
+    });
+
+  $('#server tbody').on('click', 'tr', function() {
+    if ( $(this).hasClass('selected') ) {
+      $(this).removeClass('selected');
+      $("#li_delete_node").addClass('disabled');
+      table_selected = null;
+      table_selected = null;
+    }
+    else {
+      table.api().$('tr.selected').removeClass('selected');
+      $(this).addClass('selected');
+      $("#li_delete_node").removeClass('disabled');
+      table_selected = table.api().row(this).data();
+    }
+  });
+
+  $('#server_tree').jstree({
+    'core': {
+      'data': {
+        'url': '/api/1.0/project/<%= $project->directory %>/nodegroup',
+        'data': function (node) {
+          console.log(node);
+          return { 'id': node.id };
+        },
+        'check_callback': true
+      }
+    },
+    'plugins': ['wholerow', 'state']
+    }).on("select_node.jstree", function(node, sel, event) {
+      console.log(sel.node.id);
+      table.api().ajax.url("/project/<%= $project->id %>/datatables/nodegroup/" + sel.node.id ).load();
+      $("#li_delete_group").removeClass("disabled");
+      $("#li_add_node").removeClass("disabled");
+    });
+
 } );
 </script>
 

@@ -227,6 +227,19 @@ sub startup {
   }
 
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::Project");
+  $self->plugin("Rex::JobControl::Mojolicious::Plugin::SSH");
+  $self->plugin("Rex::JobControl::Mojolicious::Plugin::Provisioner");
+  $self->plugin(
+    "Rex::JobControl::Mojolicious::Plugin::RestRoutes",
+    prefix      => "/api/1.0",
+    base_module => "api",
+    bridge      => 'dashboard#prepare_stash',
+    objects     => [
+      'Project',           'Project::Job',
+      'Project::Formular', 'Project::Rexfile',
+      'Project::Node',     'Project::Nodegroup'
+    ],
+  );
 
   $self->plugin( Minion => { File => $self->app->config->{minion_db_file} } );
   $self->plugin("Rex::JobControl::Mojolicious::Plugin::MinionJobs");
@@ -248,6 +261,34 @@ sub startup {
       },
     }
   );
+  $self->plugin(
+    "http_basic_auth",
+    {
+      validate => sub {
+        my ( $c, $username, $pass, $realm ) = @_;
+        $c->app->log->debug(
+          "Basic-Auth user: $username with password $pass.");
+        my $user = $c->app->get_user($username);
+        if ( $c->app->check_password($username, $pass) ) {
+          $c->session("uid" => $user->{name});
+          return $user->{name};
+        }
+
+        return 0;
+      },
+      invalid => sub {
+        my $ctrl = shift;
+        return (
+          any => {
+            json =>
+              { ok => Mojo::JSON->false, error => "HTTP 401: Unauthorized" }
+          },
+        );
+      },
+      realm => 'Rex-JobControl'
+    }
+  );
+
 
   #######################################################################
   # Define routes
@@ -256,16 +297,16 @@ sub startup {
 
   # Normal route to controller
 
-  my $r = $base_routes->bridge('/')->to('dashboard#prepare_stash');
+  my $r = $base_routes->under('/')->to('dashboard#prepare_stash');
 
   $r->get('/login')->to('dashboard#login');
   $r->post('/login')->to('dashboard#login_post');
 
   my $r_formular_execute =
-    $r->bridge('/project/:project_dir/formular/:formular_dir/execute')
+    $r->under('/project/:project_dir/formular/:formular_dir/execute')
     ->to("formular#check_public");
 
-  my $r_auth = $r->bridge('/')->to("dashboard#check_login");
+  my $r_auth = $r->under('/')->to("dashboard#check_login");
 
   $r_auth->get('/logout')->to('dashboard#ctrl_logout');
   $r_auth->get('/')->to('dashboard#index');
@@ -275,16 +316,17 @@ sub startup {
   $r_auth->post('/project/new')->to('project#project_new_create');
 
   my $project_r =
-    $r_auth->bridge('/project/:project_dir')->to('project#prepare_stash');
-  my $rex_r = $r_auth->bridge('/project/:project_dir/rexfile/:rexfile_dir')
+    $r_auth->under('/project/:project_dir')->to('project#prepare_stash');
+  my $rex_r = $r_auth->under('/project/:project_dir/rexfile/:rexfile_dir')
     ->to('rexfile#prepare_stash');
-  my $job_r = $r_auth->bridge('/project/:project_dir/job/:job_dir')
+  my $job_r = $r_auth->under('/project/:project_dir/job/:job_dir')
     ->to('job#prepare_stash');
-  my $form_r = $r_auth->bridge('/project/:project_dir/formular/:formular_dir')
+  my $form_r = $r_auth->under('/project/:project_dir/formular/:formular_dir')
     ->to('formular#prepare_stash');
 
   $project_r->get('/nodes')->to('nodes#index');
   $project_r->get('/audit')->to('audit#index');
+  $project_r->get('/datatables/nodegroup/:nodegroup_id')->to('nodes#get_nodes_from_group');
 
   $project_r->get('/')->to('project#view');
   $project_r->get('/job/new')->to('job#job_new');
@@ -314,6 +356,17 @@ sub startup {
   $job_r->get('/execute')->to('job#job_execute');
   $job_r->post('/execute')->to('job#job_execute_dispatch');
   $job_r->get('/:job_id/output')->to('job#view_output_log');
+
+
+  #######################################################################
+  # Load Plugins
+  #######################################################################
+  for my $plug ( @{ $self->config->{plugins} } ) { 
+    eval "use $plug;";
+    if($@) {
+      $self->app->log->error("Can't load $plug: $@");
+    }
+  }
 
   #######################################################################
   # for the package
