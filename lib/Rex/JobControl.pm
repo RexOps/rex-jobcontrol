@@ -187,6 +187,7 @@ package Rex::JobControl;
 use File::Basename 'dirname';
 use File::Spec::Functions 'catdir';
 use Mojo::Base 'Mojolicious';
+use Mojo::Home;
 use Data::Dumper;
 use Rex::JobControl::Mojolicious::Command::jobcontrol;
 
@@ -373,13 +374,13 @@ sub startup {
   #######################################################################
 
   # Switch to installable home directory
-  $self->home->parse( catdir( dirname(__FILE__), 'JobControl' ) );
+  $self->home(Mojo::Home->new(__FILE__)->dirname->child('JobControl'));
 
   # Switch to installable "public" directory
-  $self->static->paths->[0] = $self->home->rel_dir('public');
+  $self->static->paths->[0] = $self->home->rel_file('public');
 
   # Switch to installable "templates" directory
-  $self->renderer->paths->[0] = $self->home->rel_dir('templates');
+  $self->renderer->paths->[0] = $self->home->rel_file('templates');
 
 }
 
